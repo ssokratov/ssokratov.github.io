@@ -982,7 +982,6 @@
           <button class="btn" type="button" role="menuitem" onclick="chooseImportFile('compconImportFile')" data-i18n="import_compcon">Импорт COMP/CON</button>
         </div>
       </div>
-    </div>
       <div class="export-dropdown" id="exportDropdown">
         <button class="btn" type="button" onclick="toggleExportMenu(event)" aria-haspopup="true" aria-expanded="false"><span data-i18n="u141">Экспорт JSON</span> <span aria-hidden="true">▴</span></button>
         <div class="export-dropdown-menu" role="menu">
@@ -990,12 +989,13 @@
           <button class="btn" type="button" role="menuitem" onclick="exportCompconJSON()" data-i18n="export_compcon">Экспорт COMP/CON</button>
         </div>
       </div>
+    </div>
     <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importJSON(event)">
     <input type="file" id="compconImportFile" accept="application/json,.json" style="display:none" onchange="importCompconJSON(event)">
     <div class="footer-links">
       <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
       <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-      <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v341</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+      <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v342</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
     </div>
   </div>
 </main>
