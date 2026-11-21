@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="btn" cx="35%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#ff7a7a"/>
+      <stop offset="55%" stop-color="#d63030"/>
+      <stop offset="100%" stop-color="#9e1f1f"/>
+    </radialGradient>
+    <linearGradient id="rimRed" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a52a2a"/>
+      <stop offset="100%" stop-color="#6e1a1a"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff3a0"/>
+      <stop offset="50%" stop-color="#f5c518"/>
+      <stop offset="100%" stop-color="#c9960a"/>
+    </linearGradient>
+    <pattern id="hazard" width="56" height="56" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="56" height="28" fill="#ffd43b"/>
+      <rect y="28" width="56" height="28" fill="#10131a"/>
+    </pattern>
+    <path id="arcTop" d="M 174,114 A 164,164 0 0,1 338,114" fill="none"/>
+    <path id="arcBottom" d="M 160,422 A 192,192 0 0,0 352,422" fill="none"/>
+  </defs>
+  <circle cx="256" cy="256" r="230" fill="none" stroke="url(#rimRed)" stroke-width="35"/>
+  <circle cx="256" cy="256" r="214" fill="url(#btn)"/>
+  <path d="M 285 135 L 195 275 L 245 275 L 220 385 L 325 240 L 270 240 Z" fill="#ffe135" transform="translate(256 256) scale(0.9) translate(-256 -256)"/>
+  <text font-size="48" letter-spacing="1" font-weight="700" fill="url(#gold)" font-family="system-ui, sans-serif"><textPath href="#arcTop" startOffset="50%" text-anchor="middle">LANCER</textPath></text>
+  <text font-size="48" letter-spacing="1" font-weight="700" fill="url(#gold)" font-family="system-ui, sans-serif"><textPath href="#arcBottom" startOffset="50%" text-anchor="middle">ENGAGE</textPath></text>
+</svg>

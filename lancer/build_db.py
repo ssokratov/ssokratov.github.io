@@ -1,0 +1,387 @@
+#!/usr/bin/env python3
+"""Build the embedded Lancer weapons/systems DB for lancer/index.html.
+
+Source: Massif Press open data (lancer-data, the same data COMP/CON uses):
+  https://github.com/massif-press/lancer-data (lib/weapons.json, lib/systems.json, lib/tags.json, lib/talents.json)
+Output: compact DB literal injected into index.html between // __DB_START__ / // __DB_END__.
+
+Usage:
+  python3 build_db.py            # downloads JSON from GitHub, rebuilds DB in index.html
+  python3 build_db.py --local /tmp   # use local *.json files (lancer-weapons.json etc.)
+DB holds weapons, systems, talents, the tag dictionary and the frame -> mounts map (29 frames).
+"""
+import argparse, html, json, re, sys, urllib.request
+from pathlib import Path
+
+HERE = Path(__file__).parent
+INDEX = HERE / "index.html"
+BASE = "https://raw.githubusercontent.com/massif-press/lancer-data/master/lib/"
+MOUNT_MAP = {"Auxiliary": "Aux", "Main": "Main", "Heavy": "Heavy",
+             "Superheavy": "Superheavy", "Ship-class": "Heavy",
+             "Flex": "Flex", "Integrated": "Integrated"}
+# manufacturer codes -> full names (for search; the books use the codes)
+SRC_NAMES = {"GMS": "GMS", "IPS-N": "IPS-N", "HORUS": "HORUS",
+             "SSC": "Smith-Shimano", "HA": "Harrison Armory"}
+# frame roles (lancer-data mechtype) -> Russian; v17, user request
+ROLE_RU = {"Striker": "Штурмовик", "Defender": "Защитник",
+           "Support": "Поддержка", "Controller": "Контролёр",
+           "Artillery": "Артиллерия", "Balanced": "Универсал"}
+
+def fetch(name, local_dir):
+    if local_dir:
+        return json.loads((Path(local_dir) / name).read_text(encoding="utf-8"))
+    with urllib.request.urlopen(BASE + name, timeout=30) as r:
+        return json.loads(r.read().decode("utf-8"))
+
+def clean(text):
+    if not text:
+        return ""
+    text = re.sub(r"<br\s*/?>", "\n", text)
+    text = re.sub(r"<[^>]+>", "", text)
+    return html.unescape(text).strip()
+
+def fmt_damage(dmg):
+    parts = []
+    for d in dmg or []:
+        t = d.get("type") or ""
+        parts.append(f"{d['val']} {t}".strip())
+    return " + ".join(parts)
+
+def fmt_range(rng):
+    parts = []
+    for r in rng or []:
+        t = r.get("type") or ""
+        parts.append(f"{t} {r['val']}".strip())
+    return ", ".join(parts)
+
+def limited_val(tags):
+    for tg in (tags or []):
+        if tg.get("id") == "tg_limited":
+            v = tg.get("val")
+            # у Prototype Weapon в val лежит дайс урона, а не число зарядов — трекер не применим
+            return v if isinstance(v, int) else 0
+    return 0
+
+def clean_list(text):
+    """Clean HTML that is mostly <ul>/<li> lists into plain text with bullets."""
+    if not text:
+        return ""
+    text = re.sub(r"<li\s*>", "\n• ", text)
+    text = re.sub(r"</li\s*>", "", text)
+    text = re.sub(r"<br\s*/?>", "\n", text)
+    text = re.sub(r"<[^>]+>", "", text)
+    text = html.unescape(text)
+    text = re.sub(r"\n\s*\n+", "\n", text)
+    return text.strip()
+
+def fmt_tags(tags, tagmap):
+    out = []
+    for tg in tags or []:
+        t = tagmap.get(tg["id"])
+        if not t:
+            out.append(tg["id"])
+            continue
+        name = t["name"]
+        val = tg.get("val")
+        if val is None:
+            name = name.replace(" {VAL}", "").replace("{VAL}", "")
+        else:
+            name = name.replace("{VAL}", str(val))
+        out.append(name)
+    return ", ".join(out)
+
+def fmt_actions(actions):
+    lines = []
+    for a in actions or []:
+        head = a.get("name", "")
+        act = a.get("activation") or ""
+        freq = a.get("frequency") or ""
+        bits = " — ".join(x for x in [act, freq] if x)
+        if bits:
+            head += f" ({bits})"
+        detail = clean(a.get("detail") or "")
+        if not detail:
+            # fall back to structured fields when detail is empty
+            extra = []
+            if a.get("damage"):
+                extra.append("Damage: " + fmt_damage(a["damage"]))
+            if a.get("range"):
+                extra.append("Range: " + fmt_range(a["range"]))
+            if a.get("save"):
+                extra.append("Save: " + str(a["save"]))
+            detail = "; ".join(extra)
+        trig = a.get("trigger")
+        if trig:
+            detail = "Trigger: " + clean(trig) + ("\n" + detail if detail else "")
+        lines.append((head + ": " + detail).strip() if detail else head)
+    return "\n\n".join(lines)
+
+def fmt_deployables(deps):
+    lines = []
+    for d in deps or []:
+        head = d.get("name", "")
+        bits = [x for x in [d.get("type"), d.get("activation")] if x]
+        if d.get("range"):
+            bits.append(fmt_range(d["range"]))
+        if d.get("size") is not None:
+            bits.append(f"Size {d['size']}")
+        # Статы развёртываемого объекта (v174): без них непонятно, сколько у него HP
+        # и как по нему попадать — пользователь спросил про дрон-турель (HP 5, Evasion 10, E-Defense 10)
+        if d.get("hp") is not None:
+            bits.append(f"HP {d['hp']}")
+        if d.get("evasion") is not None:
+            bits.append(f"Evasion {d['evasion']}")
+        if d.get("edef") is not None:
+            bits.append(f"E-Defense {d['edef']}")
+        if bits:
+            head += " (" + ", ".join(bits) + ")"
+        detail = clean(d.get("detail") or "")
+        if not detail and d.get("damage"):
+            detail = "Damage: " + fmt_damage(d["damage"])
+        lines.append((head + ": " + detail).strip() if detail else head)
+    return "\n\n".join(lines)
+
+def fmt_profiles(profiles, tagmap):
+    lines = []
+    for p in profiles or []:
+        bits = []
+        if p.get("damage"):
+            bits.append(fmt_damage(p["damage"]))
+        if p.get("range"):
+            bits.append(fmt_range(p["range"]))
+        if p.get("tags"):
+            bits.append("tags: " + fmt_tags(p["tags"], tagmap))
+        if p.get("effect"):
+            bits.append(clean(p["effect"]))
+        acts = fmt_actions(p.get("actions"))
+        if acts:
+            bits.append(acts)
+        lines.append("Profile — " + p.get("name", "") + ": " + "; ".join(bits))
+    return "\n\n".join(lines)
+
+def fmt_triggered(x):
+    lines = []
+    for key, label in (("on_attack", "On attack"), ("on_hit", "On hit"), ("on_crit", "On crit")):
+        v = x.get(key)
+        if v:
+            lines.append(f"{label}: " + clean(v if isinstance(v, str) else json.dumps(v, ensure_ascii=False)))
+    return "\n".join(lines)
+
+def fmt_core(cs):
+    parts = []
+    if cs.get("description"):
+        parts.append(clean(cs["description"]))
+    if cs.get("active_effect"):
+        head = "Active — " + (cs.get("active_name") or "Core Power")
+        bits = [b for b in [cs.get("activation"), cs.get("use") or cs.get("frequency")] if b]
+        if bits:
+            head += " (" + ", ".join(bits) + ")"
+        parts.append(head + ": " + clean(cs["active_effect"]))
+    if cs.get("passive_name"):
+        parts.append("Passive — " + cs["passive_name"] + ": " + clean(cs.get("passive_effect") or ""))
+    return "\n\n".join(parts)
+
+def fmt_traits(traits):
+    return "\n\n".join(
+        f"{t['name']}: {clean(t.get('description') or '')}" for t in (traits or []))
+
+def build(local_dir):
+    weapons = fetch("weapons.json", local_dir)
+    systems = fetch("systems.json", local_dir)
+    tags = fetch("tags.json", local_dir)
+    frames = fetch("frames.json", local_dir)
+    talents = fetch("talents.json", local_dir)
+    tagmap = {t["id"]: t for t in tags}
+    # русский перевод компендиума (ru.json рядом со скриптом); отсутствующая
+    # позиция падает обратно на английский, чтобы сборка никогда не ломалась
+    ru = {}
+    ru_path = HERE / "ru.json"
+    if ru_path.exists():
+        ru = json.loads(ru_path.read_text(encoding="utf-8"))
+    def ru_get(section, key, field, default=""):
+        ent = (ru.get(section) or {}).get(key) or {}
+        v = ent.get(field)
+        return v if v not in (None, "") else default
+    ru_tagmap = {t["id"]: {"name": ru_get("tags", t["id"], "n", t["name"])} for t in tags}
+    tags_db = {t["id"]: {"n": t["name"], "d": clean(t.get("description") or ""),
+                          "nr": ru_get("tags", t["id"], "n", t["name"]),
+                          "dr": ru_get("tags", t["id"], "d", clean(t.get("description") or ""))} for t in tags}
+
+    db_w, warns = [], []
+    for x in weapons:
+        tags_txt = fmt_tags(x.get("tags"), tagmap)
+        # structured tags for the clickable tag chips; the formatted string
+        # stays in "g" for the search results, but is NOT part of the
+        # description anymore (the chips show the tags in the weapon row)
+        tags_struct = [[tg["id"], tg.get("val")] for tg in (x.get("tags") or [])]
+        parts = []
+        if x.get("effect"):
+            parts.append(clean(x["effect"]))
+        trig = fmt_triggered(x)
+        if trig:
+            parts.append(trig)
+        acts = fmt_actions(x.get("actions"))
+        if acts:
+            parts.append(acts)
+        profs = fmt_profiles(x.get("profiles"), tagmap)
+        if profs:
+            parts.append(profs)
+        deps = fmt_deployables(x.get("deployables"))
+        if deps:
+            parts.append(deps)
+        if x.get("sp") is not None:
+            parts.append(f"SP: {x['sp']}")
+        desc = clean(x.get("description") or "")
+        if desc:
+            parts.append(desc)
+        full_desc = "\n\n".join(parts)
+        lic = x.get("license")
+        lvl = x.get("license_level")
+        src = x.get("source") or ""
+        srcf = SRC_NAMES.get(src, src)
+        lab_parts = [src] + ([lic] if lic and lic != src else []) + ([f"LL{lvl}"] if lvl is not None else [])
+        lab = " · ".join(p for p in lab_parts if p)
+        # русская подпись: производитель и уровень — как в оригинале,
+        # имя лицензии — русское имя фрейма
+        lic_ru = ru_get("frames", lic, "n", lic) if lic else ""
+        lab_ru_parts = [src] + ([lic_ru] if lic and lic != src else []) + ([f"LL{lvl}"] if lvl is not None else [])
+        lab_ru = " · ".join(p for p in lab_ru_parts if p)
+        mount = MOUNT_MAP.get(x.get("mount"), "Main")
+        # profile weapons (e.g. Assault Cannon) carry damage/range in profiles;
+        # use the first usable profile (skip N/A stubs like Apocalypse Rail charge 4)
+        dmg = fmt_damage(x.get("damage"))
+        rng = fmt_range(x.get("range"))
+        if (not dmg or not rng or dmg == "N/A" or rng == "N/A") and x.get("profiles"):
+            for p0 in x["profiles"]:
+                pd = fmt_damage(p0.get("damage"))
+                pr = fmt_range(p0.get("range"))
+                if pd and pd != "N/A" and pr and pr != "N/A":
+                    dmg, rng = pd, pr
+                    break
+        db_w.append({
+            "n": x["name"], "m": mount, "t": x.get("type") or "",
+            "d": dmg, "r": rng, "g": tags_txt, "tg": tags_struct,
+            "lab": " · ".join(p for p in [lab, mount] if p),
+            "sf": srcf if srcf != src else "",
+            "nr": ru_get("weapons", x["name"], "n", x["name"]),
+            "tr": ru_get("weapons", x["name"], "t", x.get("type") or ""),
+            "dr": ru_get("weapons", x["name"], "d", dmg),
+            "rr": ru_get("weapons", x["name"], "r", rng),
+            "xr": ru_get("weapons", x["name"], "x", full_desc),
+            "gr": fmt_tags(x.get("tags"), ru_tagmap),
+            "labr": " · ".join(p for p in [lab_ru, mount] if p),
+            "lic": x.get("license") or "",
+            "ll": x.get("license_level") if x.get("license_level") is not None else None,
+            "lim": limited_val(x.get("tags")),
+            "tg": [[tg["id"], tg.get("val")] for tg in (x.get("tags") or [])],
+            "x": full_desc,
+        })
+    db_s = []
+    for x in systems:
+        parts = []
+        if x.get("effect"):
+            parts.append(clean(x["effect"]))
+        acts = fmt_actions(x.get("actions"))
+        if acts:
+            parts.append(acts)
+        deps = fmt_deployables(x.get("deployables"))
+        if deps:
+            parts.append(deps)
+        desc = clean(x.get("description") or "")
+        if desc:
+            parts.append(desc)
+        full_desc = "\n\n".join(parts)
+        if not full_desc:
+            warns.append(f"system without text: {x['name']}")
+        lic = x.get("license")
+        lvl = x.get("license_level")
+        src = x.get("source") or ""
+        srcf = SRC_NAMES.get(src, src)
+        lab_parts = [src] + ([lic] if lic and lic != src else []) + ([f"LL{lvl}"] if lvl is not None else [])
+        lab = " · ".join(p for p in lab_parts if p)
+        lic_ru = ru_get("frames", lic, "n", lic) if lic else ""
+        lab_ru_parts = [src] + ([lic_ru] if lic and lic != src else []) + ([f"LL{lvl}"] if lvl is not None else [])
+        lab_ru = " · ".join(p for p in lab_ru_parts if p)
+        db_s.append({
+            "n": x["name"], "t": x.get("type") or "", "p": x.get("sp") or 0,
+            "lab": " · ".join(p for p in [lab, f"{x.get('sp') or 0} SP"] if p),
+            "sf": srcf if srcf != src else "",
+            "nr": ru_get("systems", x["name"], "n", x["name"]),
+            "tr": ru_get("systems", x["name"], "t", x.get("type") or ""),
+            "xr": ru_get("systems", x["name"], "x", full_desc),
+            "labr": " · ".join(p for p in [lab_ru, f"{x.get('sp') or 0} SP"] if p),
+            "lic": x.get("license") or "",
+            "ll": x.get("license_level") if x.get("license_level") is not None else None,
+            "lim": limited_val(x.get("tags")),
+            "x": full_desc,
+        })
+    w_by_id = {x["id"]: x["name"] for x in weapons}
+    frames_db = {}
+    for x in frames:
+        cs = x.get("core_system") or {}
+        iw = [w_by_id[i] for i in (cs.get("integrated") or []) if i in w_by_id]
+        fsrc = x.get("source") or ""
+        fsrcf = SRC_NAMES.get(fsrc, fsrc)
+        frole = [r for r in (x.get("mechtype") or []) if r]
+        frames_db[x["name"]] = {
+            "m": x.get("mounts") or [],
+            "c": cs.get("name") or "",
+            "cd": fmt_core(cs),
+            "t": fmt_traits(x.get("traits")),
+            # корпорация и роль фрейма (v17: видны в поиске и ищутся)
+            "src": fsrc,
+            "sf": fsrcf if fsrcf != fsrc else "",
+            "role": frole,
+            "roler": [ROLE_RU.get(r, r) for r in frole],
+            "nr": ru_get("frames", x["name"], "n", x["name"]),
+            "cr": ru_get("frames", x["name"], "c", cs.get("name") or ""),
+            "cdr": ru_get("frames", x["name"], "cd", fmt_core(cs)),
+            "tr": ru_get("frames", x["name"], "t", fmt_traits(x.get("traits"))),
+            "s": x.get("stats") or {},
+            "iw": iw,
+            # лицензия фрейма: имя = имя фрейма; ранг, нужный для фрейма, — II
+            # (корбук: ранг I даёт снаряжение, ранг II — фрейм; у Everest 0 — без лицензии)
+            "lic": x["name"] if x["name"] != "Everest" else "GMS",
+            "ll": x.get("license_level") if x.get("license_level") is not None else 2,
+        }
+    db = {"weapons": db_w, "systems": db_s, "frames": frames_db,
+          "talents": [{"n": x["name"], "t": clean(x.get("terse") or ""),
+                       "r": [r["name"] for r in (x.get("ranks") or [])],
+                       "d": [clean_list(r.get("description") or "") for r in (x.get("ranks") or [])],
+                       "nr": ru_get("talents", x["name"], "n", x["name"]),
+                       "tr": ru_get("talents", x["name"], "t", clean(x.get("terse") or "")),
+                       "rr": (ru_get("talents", x["name"], "r") or [r["name"] for r in (x.get("ranks") or [])]),
+                       "dr": (ru_get("talents", x["name"], "d") or [clean_list(r.get("description") or "") for r in (x.get("ranks") or [])])}
+                      for x in talents],
+          "tags": tags_db}
+    for w_ in warns:
+        print("WARN:", w_, file=sys.stderr)
+    return db
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--local", default=None, help="dir with lancer-weapons.json etc.")
+    args = ap.parse_args()
+    db = build(args.local)
+    lit = json.dumps(db, ensure_ascii=False, separators=(",", ":"))
+    print(f"weapons: {len(db['weapons'])}, systems: {len(db['systems'])}, talents: {len(db['talents'])}, tags: {len(db['tags'])}, DB bytes: {len(lit.encode('utf-8'))}")
+    ru_n = sum(1 for w in db['weapons'] if w.get('nr') and w['nr'] != w['n'])
+    ru_s = sum(1 for s in db['systems'] if s.get('nr') and s['nr'] != s['n'])
+    ru_t = sum(1 for t in db['talents'] if t.get('nr') and t['nr'] != t['n'])
+    ru_f = sum(1 for k, f in db['frames'].items() if f.get('nr') and f['nr'] != k)
+    print(f"RU names: weapons {ru_n}/{len(db['weapons'])}, systems {ru_s}/{len(db['systems'])}, talents {ru_t}/{len(db['talents'])}, frames {ru_f}/{len(db['frames'])}")
+    html_src = INDEX.read_text(encoding="utf-8")
+    block = "// __DB_START__\nconst DB = " + lit + ";\n// __DB_END__"
+    if "// __DB_START__" in html_src:
+        # NB: replacement via lambda — a plain string would make re.sub
+        # interpret \n inside the JSON literal as real newlines (breaking JS strings)
+        html_src = re.sub(r"// __DB_START__.*?// __DB_END__", lambda _: block, html_src, flags=re.S)
+    else:
+        anchor = "const KEY = 'lancer-tracker-v1';"
+        assert anchor in html_src, "anchor not found in index.html"
+        html_src = html_src.replace(anchor, block + "\n" + anchor, 1)
+    INDEX.write_text(html_src, encoding="utf-8")
+    print("index.html bytes:", len(html_src.encode("utf-8")))
+
+if __name__ == "__main__":
+    main()
