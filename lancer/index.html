@@ -974,13 +974,7 @@
     <div class="global-action-grid">
       <button class="btn" onclick="openStart()" data-i18n="new_pilot">Новый пилот</button>
       <button class="btn" onclick="openLevelUp()" data-i18n="u213">Левел ап</button>
-      <div class="export-dropdown" id="exportDropdown">
-        <button class="btn" type="button" onclick="toggleExportMenu(event)" aria-haspopup="true" aria-expanded="false"><span data-i18n="u141">Экспорт JSON</span> <span aria-hidden="true">▴</span></button>
-        <div class="export-dropdown-menu" role="menu">
-          <button class="btn" type="button" role="menuitem" onclick="exportJSON()" data-i18n="export_tracker">Экспорт JSON</button>
-          <button class="btn" type="button" role="menuitem" onclick="exportCompconJSON()" data-i18n="export_compcon">Экспорт COMP/CON</button>
-        </div>
-      </div>
+      <button class="btn drive-action" type="button" onclick="openProfiles()" title="Google Drive" aria-label="Профили / Google Drive"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#00832d" d="M8.4 3h5.2L5.3 17H.1z"/><path fill="#ffba00" d="M13.6 3 23 19h-5.7L8.4 3z"/><path fill="#0066da" d="M5.3 14h14.2l3.3 5H2z"/></svg><span>Google Drive</span></button>
       <div class="import-dropdown" id="importDropdown">
         <button class="btn" type="button" onclick="toggleImportMenu(event)" aria-haspopup="true" aria-expanded="false"><span data-i18n="u142">Импорт JSON</span> <span aria-hidden="true">▴</span></button>
         <div class="import-dropdown-menu" role="menu">
@@ -988,14 +982,20 @@
           <button class="btn" type="button" role="menuitem" onclick="chooseImportFile('compconImportFile')" data-i18n="import_compcon">Импорт COMP/CON</button>
         </div>
       </div>
-      <button class="btn drive-action" type="button" onclick="openProfiles()" title="Google Drive" aria-label="Профили / Google Drive"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#00832d" d="M8.4 3h5.2L5.3 17H.1z"/><path fill="#ffba00" d="M13.6 3 23 19h-5.7L8.4 3z"/><path fill="#0066da" d="M5.3 14h14.2l3.3 5H2z"/></svg><span>Google Drive</span></button>
     </div>
+      <div class="export-dropdown" id="exportDropdown">
+        <button class="btn" type="button" onclick="toggleExportMenu(event)" aria-haspopup="true" aria-expanded="false"><span data-i18n="u141">Экспорт JSON</span> <span aria-hidden="true">▴</span></button>
+        <div class="export-dropdown-menu" role="menu">
+          <button class="btn" type="button" role="menuitem" onclick="exportJSON()" data-i18n="export_tracker">Экспорт JSON</button>
+          <button class="btn" type="button" role="menuitem" onclick="exportCompconJSON()" data-i18n="export_compcon">Экспорт COMP/CON</button>
+        </div>
+      </div>
     <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importJSON(event)">
     <input type="file" id="compconImportFile" accept="application/json,.json" style="display:none" onchange="importCompconJSON(event)">
     <div class="footer-links">
       <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
       <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-      <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v340</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+      <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v341</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
     </div>
   </div>
 </main>
