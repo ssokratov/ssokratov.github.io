@@ -996,7 +996,7 @@
     <div class="footer-links">
       <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
       <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-      <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v344</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+      <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v345</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
     </div>
   </div>
 </main>
@@ -4079,11 +4079,15 @@ function renderLists(){
   const licEl = document.getElementById('licenses');
   if (licEl){
     if (editOn('pilot')){
-      licEl.innerHTML = S.pilot.licenses.map((l,i)=> `
-    <div class="row"><select class="fld lic-name" style="flex:1 1 auto;min-width:0" onchange="S.pilot.licenses[${i}].name=this.value;save();renderLists()">${licenseNameOptions(l.name)}</select>
+      licEl.innerHTML = S.pilot.licenses.map((l,i)=> {
+      const f = DB.frames[frameKey(l.name)];
+      const corp = f && f.src ? f.src + ': ' : '';
+      return `
+    <div class="row"><span class="lic-name" style="flex:1 1 auto;min-width:0">${esc(corp + fd(l.name).n)}</span>
     <select class="lic-rank fld" onchange="S.pilot.licenses[${i}].rank=+this.value;save();renderLists()">
       ${[1,2,3].map(r=>`<option value="${r}" ${l.rank===r?'selected':''}>${['I','II','III'][r-1]}</option>`).join('')}</select>
-    <button class="btn x" style="flex:0 0 auto" onclick="delLicense(${i})">✕</button></div>`).join('');
+    <button class="btn x" style="flex:0 0 auto" onclick="delLicense(${i})">✕</button></div>`;
+    }).join('');
     } else {
       // v332: в просмотре — корпорация + имя + ранг, желчным, через запятую; клик открывает карточку лицензии
       // v335: происхождение 'pilot' — «Назад» из карточки закрывает вид, а не показывает поиск
@@ -5267,13 +5271,6 @@ function renderDescBoxes(){
     tb.innerHTML = traitsHtml(dispField('mech.traits') || '')
       + (fg ? `<div class="tags" style="margin-top:6px">${fg}</div>` : '');
   }
-}
-function licenseNameOptions(current){
-  const keys = Object.keys(DB.frames).filter(k=>k!=='Everest');
-  let opts = `<option value=\"\" ${!current?'selected':''}>—</option>`;
-  opts += keys.map(k=>`<option value=\"${esc(k)}\" ${current===k?'selected':''}>${esc(fd(k).n)}</option>`).join('');
-  if (current && !DB.frames[current]) opts += `<option value=\"${esc(current)}\" selected>${esc(current)}</option>`;
-  return opts;
 }
 function delLicense(i){ S.pilot.licenses.splice(i,1); save(); renderLists(); }
 function toggleLicenseFilter(on){ set('settings.licenseFilter', !!on); save(); renderLists(); }
