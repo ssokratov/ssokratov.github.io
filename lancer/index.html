@@ -355,8 +355,10 @@
   input.trig-val { background:linear-gradient(180deg, rgba(92,223,51,.40), rgba(92,223,51,.20)); border-color:transparent; border-radius:0; padding:2px 4px; width:56px; border-left-color:var(--line); }
   /* v350: шаг HASE в мастере — строки как у триггеров; имя — рыжим (--hud-amber),
      как заголовок «СТАТЫ», число — на зелёном фоне (.trig-val). Обычный экран
-     статов (стат-карточка) не меняется. */
-  .hase-row .trig-name { color:var(--hud-amber); }
+     статов (стат-карточка) не меняется.
+     v351: фон имени — тоже рыжим (тот же оранжевый градиент, что у строки HASE
+     в стат-карточке), а не стальным серым. */
+  .hase-row .trig-name { color:var(--hud-amber); background:linear-gradient(180deg, rgba(232,89,12,.48), rgba(232,89,12,.24)); }
   /* v338: поля редактирования талантов/лицензий — как в просмотре: без рамки и фона */
   input.fld, select.fld { border-color:transparent; background:transparent; box-shadow:none; }
   input.fld.talent-name { font-weight:700; }
@@ -1002,7 +1004,7 @@
     <div class="footer-links">
       <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
       <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-      <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v350</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+      <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v351</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
     </div>
   </div>
 </main>
@@ -1213,7 +1215,7 @@ function onDlgPopstate(){
   if (startViewOpen()){ startHist = false; fullscreenViewHide('startView'); return; }
   // v339: левел ап — тоже полноэкранный вид; Назад закрывает его без histBack
   // (запись уже снята самим нажатием Назад — как у остальных видов выше).
-  if (luViewOpen()){ luHist = false; luOpen = false; luBase = null; fullscreenViewHide('luView'); renderLists(); renderCounters(); return; }
+  if (luViewOpen()){ luHist = false; luOpen = false; fullscreenViewHide('luView'); renderLists(); renderCounters(); return; }
   // v219: диалогов нет — Назад с не-главной вкладки ведёт на главную (Мех).
   // Запись уже снята самим нажатием Назад: tabHist сбрасываем ДО showTab,
   // иначе showTab снял бы ещё одну запись истории. На главной — ничего
@@ -6686,15 +6688,12 @@ function applyRest(){
 // подняв LL, остальные шаги уже считают ожидания от нового LL. Жёстких
 // ограничений нет — перебор просто показывается сообщением. Шага подтверждения
 // в конце нет: последний шаг закрывает мастер кнопкой «Готово».
-// Поднятый в этом мастере пункт запоминается (luPicked) и переключается:
-// повторный тап снимает, тап по другому — переносит. Новый пункт, добавленный
-// через поиск, блокирует поднятие старых (и наоборот) — один выбор на шаг.
 // Перераспределение убрано как шаг: его правила — текстом на обзоре.
+// v351: поднятие «один выбор на шаг» (luPicked) и маркеры «новое» (luBase/luIsNew/
+// luNewAdded) удалены — все шаги теперь знакомые секции без ограничений.
 var luOpen = false;
 var luStepId = 'overview';
 var luBaseLL = 0;
-var luBase = null;
-var luPicked = { talent: null };
 const LU_STEPS = [
   { id:'overview', title:'u213', render: luOverview },
   { id:'license',  title:'u189', render: luLicense },
@@ -6703,14 +6702,6 @@ const LU_STEPS = [
   { id:'talent',   title:'u190', render: luTalent },
   { id:'core',     title:'u196', render: luCore }, // v346: всегда виден — на LL0–2 сообщение показывает, что выбирать пока нечего
 ];
-function luIsNew(list, name){
-  const base = luBase ? (luBase[list]||[]) : [];
-  return !base.some(x => (x.name !== undefined ? x.name : x) === name);
-}
-function luNewAdded(list){
-  const cur = list === 'coreBonuses' ? (S.pilot.coreBonuses||[]) : (S[list]||[]);
-  return cur.filter(x => luIsNew(list, x.name !== undefined ? x.name : x)).length;
-}
 function luVisibleSteps(){ return LU_STEPS.filter(function(s){ return !s.skip || !s.skip(); }); }
 function luCurrentIndex(){
   const steps = luVisibleSteps();
@@ -6719,13 +6710,6 @@ function luCurrentIndex(){
 }
 function openLevelUp(){
   luBaseLL = calcLL();
-  luBase = {
-    licenses: JSON.parse(JSON.stringify(S.pilot.licenses||[])),
-    talents: JSON.parse(JSON.stringify(S.talents||[])),
-    triggers: JSON.parse(JSON.stringify(S.triggers||[])),
-    coreBonuses: JSON.parse(JSON.stringify(S.pilot.coreBonuses||[])),
-  };
-  luPicked = { talent: null };
   luOpen = true;
   luStepId = 'overview';
   bindDlgHistory();
@@ -6736,7 +6720,6 @@ function openLevelUp(){
 function closeLevelUp(){
   luOpen = false;
   fullscreenViewHide('luView');
-  luBase = null;
   if (luHist){ luHist = false; suppressNextPopstate = true; histBack(); }
   renderLists(); renderCounters();
 }
@@ -6827,44 +6810,26 @@ function luHase(){
   }).join('');
   return `<p class="hint">${esc(L('u217'))}</p><p class="ready-msg ${ok ? 'ok' : 'low'}">${esc(msg)}</p>${rows}`;
 }
-function luRaiseTalent(name){
-  const t = S.talents.find(x=>x.name===name);
-  if (!t) return;
-  if (luPicked.talent === name){
-    t.rank = Math.max(1, (t.rank||1) - 1);
-    luPicked.talent = null;
-  } else {
-    if (luPicked.talent){
-      const prev = S.talents.find(x=>x.name===luPicked.talent);
-      if (prev) prev.rank = Math.max(1, (prev.rank||1) - 1);
-    }
-    t.rank = Math.min(3, (t.rank||1) + 1);
-    luPicked.talent = name;
-  }
-  syncNuclearCavalier();
-  save(); renderLists(); renderCounters(); luRenderStep();
-}
-function luRemoveTalent(i){
-  S.talents.splice(i,1);
-  syncNuclearCavalier();
-  save(); renderLists(); renderCounters(); luRenderStep();
-}
+// v351: шаг талантов — знакомая секция талантов (как на вкладке Пилота) + сообщение
+// готовности. Имя — поле (заполнение из базы), ранг — дропдаун I/II/III, удаление —
+// крестик. Жёстких ограничений нет: можно поднять несколько талантов и добавить
+// несколько новых — сообщение покажет «не хватает» / «перебор». Работает и для
+// прыжка на несколько уровней (норма считается от текущего LL).
 function luTalent(){
-  const raised = luPicked.talent;
-  const newAdded = luNewAdded('talents') > 0;
+  const have = (S.talents||[]).reduce((a,t)=>a+(+t.rank||0),0);
+  const need = 3 + calcLL();
+  const msg = readyMsgText('talents', have, need);
+  const ok = have === need;
   const rows = S.talents.map((t,i)=>{
     const dtn = findTalent(t.name);
     const tDisp = dtn ? td(dtn).n : t.name;
-    const roman = ['I','II','III'][t.rank-1] || '';
-    const isRaised = raised === t.name;
-    const isNew = luIsNew('talents', t.name);
-    const maxed = (t.rank||1) >= 3;
-    return `<div class="row"><b style="flex:1 1 auto">${esc(tDisp)} ${roman}${isRaised ? ' ✓' : ''}${isNew ? ' (' + esc(L('u225')).toLowerCase() + ')' : ''}</b>`
-    + `<button class="btn ${isRaised ? 'primary' : ''}" style="flex:0 0 auto" ${newAdded || maxed ? 'disabled' : ''} onclick="luRaiseTalent('${esc(t.name)}')">+1</button>`
-    + (isNew ? `<button class="btn x" style="flex:0 0 auto" onclick="luRemoveTalent(${i})">✕</button>` : '') + `</div>`;
+    return `<div class="row"><input class="fld talent-name" type="text" placeholder="${L('ph_talent')}" value="${esc(tDisp)}" onchange="fillTalentFromDb(${i},this.value)">
+    <select class="narrow fld" onchange="setTalentRank(${i},this.value)">
+      ${[1,2,3].map(r=>`<option value="${r}" ${t.rank===r?'selected':''}>${['I','II','III'][r-1]}</option>`).join('')}</select>
+    <button class="btn x" style="flex:0 0 auto" onclick="delRow('talents',${i})">✕</button></div>`;
   }).join('');
-  return `<p class="hint">${esc(L('u218'))}</p>${rows}`
-  + `<button class="btn primary" ${raised !== null || newAdded ? 'disabled' : ''} onclick="openSearch('talent')">＋ ${esc(L('u190'))}</button>`;
+  return `<p class="hint">${esc(L('u218'))}</p><p class="ready-msg ${ok ? 'ok' : 'low'}">${esc(msg)}</p>${rows}`
+  + `<button class="btn primary" onclick="openSearch('talent')">＋ ${esc(L('u190'))}</button>`;
 }
 function luRemoveLicense(i){
   S.pilot.licenses.splice(i,1);
@@ -6894,25 +6859,27 @@ function luLicense(){
   return `<p class="hint">${esc(L('u219'))}</p><p><b>LL: ${have}</b> · Grit: ${Math.ceil(have/2)}</p>${rows}`
   + `<button class="btn primary" onclick="openSearch('license')">＋ ${esc(L('u189'))}</button>`;
 }
-function luRemoveCore(i){
-  S.pilot.coreBonuses.splice(i,1);
-  save(); recalcDerived(); renderCounters(); renderLists(); luRenderStep();
-}
+// v351: шаг кор-бонусов — знакомая секция кор-бонусов (как на вкладке Меха) +
+// сообщение готовности. Каждый бонус — имя, описание и чипы действий, удаление —
+// крестик. Жёстких ограничений нет: кнопку «＋ Кор-бонус» не гасим, перебор
+// показывается сообщением. Работает и для прыжка на несколько уровней.
 function luCore(){
-  const newAdded = luNewAdded('coreBonuses') > 0;
   const have = (S.pilot.coreBonuses||[]).length;
   const need = coreBonusSlots();
   const msg = readyMsgText('core', have, need);
   const ok = have === need;
   const rows = S.pilot.coreBonuses.map((name,i)=>{
     const cb = findCoreBonus(name);
-    const disp = cb ? (isRu() ? (cb.ru||cb.n) : cb.n) : name;
-    const isNew = luIsNew('coreBonuses', name);
-    return `<div class="row"><b style="flex:1 1 auto">${esc(disp)}${isNew ? ' (' + esc(L('u225')).toLowerCase() + ')' : ''}</b>`
-    + (isNew ? `<button class="btn x" style="flex:0 0 auto" onclick="luRemoveCore(${i})">✕</button>` : '') + `</div>`;
+    if (!cb) return '';
+    const disp = isRu() ? (cb.ru||cb.n) : cb.n;
+    const desc = isRu() ? cb.d : cb.de;
+    const nameHtml = isRu() ? `<b>${esc(disp)}</b> <span class="dim">(${esc(cb.n)})</span>` : `<b>${esc(disp)}</b>`;
+    const cbGrants = grantsChipsHtml('coreBonus', name);
+    return `<div class="row cb-item" style="align-items:flex-start"><div style="flex:1 1 auto">${nameHtml}<br><span class="dim" style="font-size:13px">${esc(desc)}</span>${cbGrants ? '<br>' + cbGrants : ''}</div>`
+    + `<button class="btn x" style="flex:0 0 auto" onclick="removeCoreBonus(${i})">✕</button></div>`;
   }).join('');
   return `<p class="hint">${esc(L('u220'))}</p><p class="ready-msg ${ok ? 'ok' : 'low'}">${esc(msg)}</p>${rows}`
-  + `<button class="btn primary" ${newAdded ? 'disabled' : ''} onclick="openCoreBonusPicker()">＋ ${esc(L('u196'))}</button>`;
+  + `<button class="btn primary" onclick="openCoreBonusPicker()">＋ ${esc(L('u196'))}</button>`;
 }
 bind(); bindDlgHistory(); recalcDerived(); save(); initDb(); renderLists(); renderCounters(); applyLang(); maybeOpenStart();
 const cachedDriveToken=loadCachedDriveToken();
