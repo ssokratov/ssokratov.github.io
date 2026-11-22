@@ -353,12 +353,10 @@
      тёмным panel2 и давало круглую рамку border-radius:6px — отсюда потерянный зелёный
      и некрасивые круглые рамки. Как в HASE: инпут встроен в ячейку, а не отдельный бокс. */
   input.trig-val { background:linear-gradient(180deg, rgba(92,223,51,.40), rgba(92,223,51,.20)); border-color:transparent; border-radius:0; padding:2px 4px; width:56px; border-left-color:var(--line); }
-  /* v350: шаг HASE в мастере — строки как у триггеров; имя — рыжим (--hud-amber),
-     как заголовок «СТАТЫ», число — на зелёном фоне (.trig-val). Обычный экран
-     статов (стат-карточка) не меняется.
-     v351: фон имени — тоже рыжим (тот же оранжевый градиент, что у строки HASE
-     в стат-карточке), а не стальным серым. */
-  .hase-row .trig-name { color:var(--hud-amber); background:linear-gradient(180deg, rgba(232,89,12,.48), rgba(232,89,12,.24)); }
+  /* v350: шаг HASE в мастере — строки как у триггеров; число — на зелёном фоне
+     (.trig-val). Обычный экран статов (стат-карточка) не меняется.
+     v353: рыжий убрали обратно — цвета как у триггеров (серое имя на стали,
+     зелёное число); правило .hase-row удалено. */
   /* v338: поля редактирования талантов/лицензий — как в просмотре: без рамки и фона */
   input.fld, select.fld { border-color:transparent; background:transparent; box-shadow:none; }
   input.fld.talent-name { font-weight:700; }
@@ -1004,7 +1002,7 @@
     <div class="footer-links">
       <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
       <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-      <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v352</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+      <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v353</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
     </div>
   </div>
 </main>
@@ -6805,10 +6803,10 @@ function luHase(){
   const ok = have === need;
   const rows = hase.map(([k,lab])=>{
     const v = S.pilot[k]||0;
-    return `<div class="trig-row hase-row"><span class="trig-name">${lab}</span>`
+    return `<div class="trig-row"><span class="trig-name">${lab}</span>`
     + `<input class="trig-val" type="number" value="${v}" onchange="luSetHase('${k}',this.value)"></div>`;
   }).join('');
-  return `<p class="hint">${esc(L('u217'))}</p><p class="ready-msg ${ok ? 'ok' : 'low'}">${esc(msg)}</p>${rows}`;
+  return `<p class="hint">${L('u061')}</p><p class="ready-msg ${ok ? 'ok' : 'low'}">${esc(msg)}</p>${rows}`;
 }
 // v351: шаг талантов — знакомая секция талантов (как на вкладке Пилота) + сообщение
 // готовности. Имя — поле (заполнение из базы), ранг — дропдаун I/II/III, удаление —
