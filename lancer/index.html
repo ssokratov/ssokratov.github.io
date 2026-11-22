@@ -353,6 +353,10 @@
      тёмным panel2 и давало круглую рамку border-radius:6px — отсюда потерянный зелёный
      и некрасивые круглые рамки. Как в HASE: инпут встроен в ячейку, а не отдельный бокс. */
   input.trig-val { background:linear-gradient(180deg, rgba(92,223,51,.40), rgba(92,223,51,.20)); border-color:transparent; border-radius:0; padding:2px 4px; width:56px; border-left-color:var(--line); }
+  /* v350: шаг HASE в мастере — строки как у триггеров; имя — рыжим (--hud-amber),
+     как заголовок «СТАТЫ», число — на зелёном фоне (.trig-val). Обычный экран
+     статов (стат-карточка) не меняется. */
+  .hase-row .trig-name { color:var(--hud-amber); }
   /* v338: поля редактирования талантов/лицензий — как в просмотре: без рамки и фона */
   input.fld, select.fld { border-color:transparent; background:transparent; box-shadow:none; }
   input.fld.talent-name { font-weight:700; }
@@ -998,7 +1002,7 @@
     <div class="footer-links">
       <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
       <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-      <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v349</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+      <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v350</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
     </div>
   </div>
 </main>
@@ -6690,7 +6694,7 @@ var luOpen = false;
 var luStepId = 'overview';
 var luBaseLL = 0;
 var luBase = null;
-var luPicked = { hase: null, talent: null };
+var luPicked = { talent: null };
 const LU_STEPS = [
   { id:'overview', title:'u213', render: luOverview },
   { id:'license',  title:'u189', render: luLicense },
@@ -6721,7 +6725,7 @@ function openLevelUp(){
     triggers: JSON.parse(JSON.stringify(S.triggers||[])),
     coreBonuses: JSON.parse(JSON.stringify(S.pilot.coreBonuses||[])),
   };
-  luPicked = { hase: null, talent: null };
+  luPicked = { talent: null };
   luOpen = true;
   luStepId = 'overview';
   bindDlgHistory();
@@ -6801,26 +6805,27 @@ function luTrigger(){
   return `<p class="hint">${esc(L('u216'))}</p><p class="ready-msg ${ok ? 'ok' : 'low'}">${esc(msg)}</p>${rows}`
   + `<button class="btn primary" onclick="openSearch('trigger')">＋ ${esc(L('u191'))}</button>`;
 }
-function luRaiseHase(k){
-  if (luPicked.hase === k){
-    S.pilot[k] = Math.max(0, (S.pilot[k]||0) - 1);
-    luPicked.hase = null;
-  } else {
-    if (luPicked.hase) S.pilot[luPicked.hase] = Math.max(0, (S.pilot[luPicked.hase]||0) - 1);
-    S.pilot[k] = (S.pilot[k]||0) + 1;
-    luPicked.hase = k;
-  }
+// v350: шаг HASE — строки как у триггеров (имя + число на зелёном фоне) + сообщение
+// готовности. Имя — рыжим (--hud-amber), как заголовок «СТАТЫ». Жёстких ограничений
+// нет: можно поднять несколько статов — сообщение покажет «не хватает» / «перебор».
+// Работает и для прыжка на несколько уровней (норма считается от текущего LL).
+// Обычный экран статов (стат-карточка) не меняется.
+function luSetHase(k, value){
+  S.pilot[k] = Math.max(0, +value || 0);
   save(); recalcDerived(); renderCounters(); renderLists(); luRenderStep();
 }
 function luHase(){
   const hase = [['hull','Hull'], ['agility','Agility'], ['systems','Systems'], ['engineering','Engineering']];
+  const have = hase.reduce((a,[k])=>a+(S.pilot[k]||0),0);
+  const need = 2 + calcLL();
+  const msg = readyMsgText('hase', have, need);
+  const ok = have === need;
   const rows = hase.map(([k,lab])=>{
     const v = S.pilot[k]||0;
-    const picked = luPicked.hase === k;
-    return `<div class="row"><span style="flex:1 1 auto">${lab} <b>${v}</b>${picked ? ' ✓' : ''}</span>`
-    + `<button class="btn ${picked ? 'primary' : ''}" style="flex:0 0 auto" onclick="luRaiseHase('${k}')">+1</button></div>`;
+    return `<div class="trig-row hase-row"><span class="trig-name">${lab}</span>`
+    + `<input class="trig-val" type="number" value="${v}" onchange="luSetHase('${k}',this.value)"></div>`;
   }).join('');
-  return `<p class="hint">${esc(L('u217'))}</p>${rows}`;
+  return `<p class="hint">${esc(L('u217'))}</p><p class="ready-msg ${ok ? 'ok' : 'low'}">${esc(msg)}</p>${rows}`;
 }
 function luRaiseTalent(name){
   const t = S.talents.find(x=>x.name===name);
