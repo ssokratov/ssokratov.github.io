@@ -348,7 +348,11 @@
   .trig-val { flex:0 0 auto; width:44px; min-width:44px; font-size:20px; font-weight:700; text-align:center; color:#fff; background:linear-gradient(180deg, rgba(92,223,51,.40), rgba(92,223,51,.20)); box-shadow:inset 0 1px 0 rgba(255,255,255,.12), inset 0 -2px 4px rgba(0,0,0,.30); border-left:1px solid var(--line); }
   span.trig-name, span.trig-val { display:flex; align-items:center; }
   span.trig-val { justify-content:center; }
-  input.trig-val { border-color:transparent; padding:2px 4px; width:56px; border-left-color:var(--line); }
+  /* v349: инпут бонуса — как span в просмотре: тот же зелёный градиент и квадратные углы.
+     Глобальное input[type=number] (специфичность выше, чем у .trig-val) перекрывало фон
+     тёмным panel2 и давало круглую рамку border-radius:6px — отсюда потерянный зелёный
+     и некрасивые круглые рамки. Как в HASE: инпут встроен в ячейку, а не отдельный бокс. */
+  input.trig-val { background:linear-gradient(180deg, rgba(92,223,51,.40), rgba(92,223,51,.20)); border-color:transparent; border-radius:0; padding:2px 4px; width:56px; border-left-color:var(--line); }
   /* v338: поля редактирования талантов/лицензий — как в просмотре: без рамки и фона */
   input.fld, select.fld { border-color:transparent; background:transparent; box-shadow:none; }
   input.fld.talent-name { font-weight:700; }
@@ -994,7 +998,7 @@
     <div class="footer-links">
       <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
       <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-      <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v348</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+      <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v349</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
     </div>
   </div>
 </main>
