@@ -348,9 +348,7 @@
   .trig-val { flex:0 0 auto; width:44px; min-width:44px; font-size:20px; font-weight:700; text-align:center; color:#fff; background:linear-gradient(180deg, rgba(92,223,51,.40), rgba(92,223,51,.20)); box-shadow:inset 0 1px 0 rgba(255,255,255,.12), inset 0 -2px 4px rgba(0,0,0,.30); border-left:1px solid var(--line); }
   span.trig-name, span.trig-val { display:flex; align-items:center; }
   span.trig-val { justify-content:center; }
-  input.trig-name, input.trig-val { border-color:transparent; padding:2px 4px; }
-  input.trig-name { padding:8px 12px; }
-  input.trig-val { width:56px; border-left-color:var(--line); }
+  input.trig-val { border-color:transparent; padding:2px 4px; width:56px; border-left-color:var(--line); }
   /* v338: поля редактирования талантов/лицензий — как в просмотре: без рамки и фона */
   input.fld, select.fld { border-color:transparent; background:transparent; box-shadow:none; }
   input.fld.talent-name { font-weight:700; }
@@ -996,7 +994,7 @@
     <div class="footer-links">
       <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
       <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-      <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v347</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+      <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v348</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
     </div>
   </div>
 </main>
@@ -3970,7 +3968,7 @@ function renderLists(){
   const aiEl = document.getElementById('mechAiTag');
   if (aiEl) { const ai = mechAi(); aiEl.innerHTML = ai.list.length ? `<button class="tag${ai.count>1?' warn':''}" onclick="showTag('tg_ai')">${esc(tagLabel('tg_ai'))}${ai.count>1 ? ' ×' + ai.count : ''}</button>` : ''; }
   document.getElementById('triggers').innerHTML = S.triggers.map((t,i)=> editOn('triggers') ? `
-    <div class="trig-row"><input class="trig-name" type="text" placeholder="${L('ph_trigger')}" value="${esc(trigDisp(t.name))}" onchange="S.triggers[${i}].name=this.value;save()">
+    <div class="trig-row"><span class="trig-name">${esc(trigDisp(t.name))}</span>
     <input class="trig-val" type="number" value="${t.bonus}" onchange="S.triggers[${i}].bonus=+this.value;save()">
     <button class="btn x" style="flex:0 0 auto" onclick="delRow('triggers',${i})">✕</button></div>` : `
     <div class="trig-row"><span class="trig-name">${esc(trigDisp(t.name))}</span><span class="trig-val">${t.bonus>=0?'+':''}${t.bonus}</span></div>`).join('');
@@ -6776,12 +6774,7 @@ function luOverview(){
 // готовности. Жёстких ограничений нет: можно поднять несколько триггеров и добавить
 // несколько новых — сообщение покажет «не хватает» / «перебор». Работает и для
 // прыжка на несколько уровней сразу (LL0 → LL3): норма считается от текущего LL.
-function luSetTriggerName(i, value){
-  const t = S.triggers[i];
-  if (!t) return;
-  t.name = value;
-  save(); renderLists(); renderCounters(); luRenderStep();
-}
+// v348: имя триггера — статичный текст (как в просмотре), инпут только у бонуса.
 function luSetTriggerBonus(i, value){
   const t = S.triggers[i];
   if (!t) return;
@@ -6798,7 +6791,7 @@ function luTrigger(){
   const msg = readyMsgText('triggers', have, need);
   const ok = have === need;
   const rows = S.triggers.map((t,i)=>`
-    <div class="trig-row"><input class="trig-name" type="text" placeholder="${L('ph_trigger')}" value="${esc(trigDisp(t.name))}" onchange="luSetTriggerName(${i},this.value)">
+    <div class="trig-row"><span class="trig-name">${esc(trigDisp(t.name))}</span>
     <input class="trig-val" type="number" value="${t.bonus}" onchange="luSetTriggerBonus(${i},this.value)">
     <button class="btn x" style="flex:0 0 auto" onclick="luRemoveTrigger(${i})">✕</button></div>`).join('');
   return `<p class="hint">${esc(L('u216'))}</p><p class="ready-msg ${ok ? 'ok' : 'low'}">${esc(msg)}</p>${rows}`
