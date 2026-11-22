@@ -996,7 +996,7 @@
     <div class="footer-links">
       <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
       <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-      <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v345</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+      <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v346</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
     </div>
   </div>
 </main>
@@ -1433,10 +1433,12 @@ Object.assign(STR, {
   "msg_triggers": {"ru": "Триггеры: бонус +{H} из +{N}", "en": "Triggers: bonus +{H} of +{N}"},
   "msg_core": {"ru": "Core бонусы: выбрано {H} из {N}", "en": "Core Bonuses: {H} of {N} chosen"},
   "msg_hase": {"ru": "HASE: распределено {H} из {N}", "en": "HASE: {H} of {N} assigned"},
+  "msg_licenses": {"ru": "Лицензии: LL {H} из {N}", "en": "Licenses: LL {H} of {N}"},
   "msg_ready": {"ru": "готово ✓", "en": "complete ✓"},
   "msg_nothing": {"ru": "ничего не выбрано", "en": "nothing selected"},
   "msg_free": {"ru": "свободно {D}", "en": "free {D}"},
   "msg_missing": {"ru": "не хватает {D}", "en": "missing {D}"},
+  "msg_overpick": {"ru": "перебор {D}", "en": "over by {D}"},
   "msg_no_weapon": {"ru": "оружие не выбрано", "en": "no weapon selected"},
   "msg_over": {"ru": "перерасход {D}", "en": "overspent by {D}"}
 });
@@ -6620,14 +6622,17 @@ function completeness(){
   ];
 }
 // v293: полный текст сообщения готовности («Таланты: выбрано 3 из 3 — готово», а не просто «3/3»)
+// v346: перебор — отдельным суффиксом («перебор 2»), а не «готово»; лицензии — свой текст (LL)
 function readyMsgText(id, have, need){
-  const ok = have >= need;
   let body;
   if (id === 'triggers') body = L('msg_triggers').replace('{H}', have).replace('{N}', need);
   else if (id === 'core') body = L('msg_core').replace('{H}', have).replace('{N}', need);
   else if (id === 'hase') body = L('msg_hase').replace('{H}', have).replace('{N}', need);
+  else if (id === 'licenses') body = L('msg_licenses').replace('{H}', have).replace('{N}', need);
   else body = L('msg_talents').replace('{H}', have).replace('{N}', need);
-  return body + ' — ' + (ok ? L('msg_ready') : L('msg_missing').replace('{D}', need - have));
+  if (have > need) return body + ' — ' + L('msg_overpick').replace('{D}', have - need);
+  if (have === need) return body + ' — ' + L('msg_ready');
+  return body + ' — ' + L('msg_missing').replace('{D}', need - have);
 }
 function updateCompleteness(){
   const items = completeness();
@@ -6635,7 +6640,7 @@ function updateCompleteness(){
     if (it.problemOnly) continue; // SP: только перерасход, живёт в чеклисте
     const el = document.getElementById(it.msgEl);
     if (!el) continue;
-    const ok = it.have >= it.need;
+    const ok = it.have === it.need; // v346: перебор — не «готово», а янтарное и всегда видимое
     el.textContent = readyMsgText(it.id, it.have, it.need);
     el.classList.toggle('ok', ok);
     el.classList.toggle('low', !ok);
@@ -6672,6 +6677,11 @@ function applyRest(){
 // с подсказкой («поднять текущий или добавить новый») и тем же поисковиком,
 // что и на вкладках. Пишет НАПРЯМУЮ в S (как мастер создания), без черновика
 // и кнопки «Применить» — поэтому ничего не «висит» до перезагрузки.
+// v346: шаги — знакомые секции с обычными сообщениями готовности («не хватает» /
+// «перебор»), а не отдельные контролы. Лицензия — второй шаг (после обзора):
+// подняв LL, остальные шаги уже считают ожидания от нового LL. Жёстких
+// ограничений нет — перебор просто показывается сообщением. Шага подтверждения
+// в конце нет: последний шаг закрывает мастер кнопкой «Готово».
 // Поднятый в этом мастере пункт запоминается (luPicked) и переключается:
 // повторный тап снимает, тап по другому — переносит. Новый пункт, добавленный
 // через поиск, блокирует поднятие старых (и наоборот) — один выбор на шаг.
@@ -6680,15 +6690,14 @@ var luOpen = false;
 var luStepId = 'overview';
 var luBaseLL = 0;
 var luBase = null;
-var luPicked = { trigger: null, hase: null, talent: null, license: null };
+var luPicked = { trigger: null, hase: null, talent: null };
 const LU_STEPS = [
   { id:'overview', title:'u213', render: luOverview },
+  { id:'license',  title:'u189', render: luLicense },
   { id:'trigger',  title:'u191', render: luTrigger },
   { id:'hase',     title:'u192', render: luHase },
   { id:'talent',   title:'u190', render: luTalent },
-  { id:'license',  title:'u189', render: luLicense },
-  { id:'core',     title:'u196', render: luCore, skip: function(){ const ll = calcLL(); return !(ll % 3 === 0 && ll > luBaseLL && ll <= 12); } },
-  { id:'done',     title:'u197', render: luDone },
+  { id:'core',     title:'u196', render: luCore }, // v346: всегда виден — на LL0–2 сообщение показывает, что выбирать пока нечего
 ];
 function luIsNew(list, name){
   const base = luBase ? (luBase[list]||[]) : [];
@@ -6712,7 +6721,7 @@ function openLevelUp(){
     triggers: JSON.parse(JSON.stringify(S.triggers||[])),
     coreBonuses: JSON.parse(JSON.stringify(S.pilot.coreBonuses||[])),
   };
-  luPicked = { trigger: null, hase: null, talent: null, license: null };
+  luPicked = { trigger: null, hase: null, talent: null };
   luOpen = true;
   luStepId = 'overview';
   bindDlgHistory();
@@ -6858,39 +6867,35 @@ function luTalent(){
   return `<p class="hint">${esc(L('u218'))}</p>${rows}`
   + `<button class="btn primary" ${raised !== null || newAdded ? 'disabled' : ''} onclick="openSearch('talent')">＋ ${esc(L('u190'))}</button>`;
 }
-function luRaiseLicense(name){
-  const l = S.pilot.licenses.find(x=>x.name===name);
-  if (!l) return;
-  if (luPicked.license === name){
-    l.rank = Math.max(1, (l.rank||1) - 1);
-    luPicked.license = null;
-  } else {
-    if (luPicked.license){
-      const prev = S.pilot.licenses.find(x=>x.name===luPicked.license);
-      if (prev) prev.rank = Math.max(1, (prev.rank||1) - 1);
-    }
-    l.rank = Math.min(3, (l.rank||1) + 1);
-    luPicked.license = name;
-  }
-  save(); renderLists(); renderCounters(); luRenderStep();
-}
 function luRemoveLicense(i){
   S.pilot.licenses.splice(i,1);
   save(); renderLists(); renderCounters(); luRenderStep();
 }
+// v346: шаг лицензии — знакомая секция лицензий (как на вкладке Пилота) + сообщение
+// готовности «Лицензии: LL X из Y». Ранг меняется дропдауном, новая лицензия —
+// через поиск. Жёстких ограничений нет: перебор показывается сообщением.
+function luSetLicenseRank(i, rank){
+  const l = S.pilot.licenses[i];
+  if (!l) return;
+  l.rank = +rank;
+  save(); renderLists(); renderCounters(); luRenderStep();
+}
 function luLicense(){
-  const raised = luPicked.license;
-  const newAdded = luNewAdded('licenses') > 0;
+  const have = calcLL();
+  const need = luBaseLL + 1;
+  const msg = readyMsgText('licenses', have, need);
+  const ok = have === need;
   const rows = S.pilot.licenses.map((l,i)=>{
-    const isRaised = raised === l.name;
-    const isNew = luIsNew('licenses', l.name);
-    const maxed = (l.rank||1) >= 3;
-    return `<div class="row"><b style="flex:1 1 auto">${esc(fd(l.name).n)} ${['I','II','III'][l.rank-1]||''}${isRaised ? ' ✓' : ''}${isNew ? ' (' + esc(L('u225')).toLowerCase() + ')' : ''}</b>`
-    + `<button class="btn ${isRaised ? 'primary' : ''}" style="flex:0 0 auto" ${newAdded || maxed ? 'disabled' : ''} onclick="luRaiseLicense('${esc(l.name)}')">+1</button>`
-    + (isNew ? `<button class="btn x" style="flex:0 0 auto" onclick="luRemoveLicense(${i})">✕</button>` : '') + `</div>`;
+    const f = DB.frames[frameKey(l.name)];
+    const corp = f && f.src ? f.src + ': ' : '';
+    return `
+    <div class="row"><span class="lic-name" style="flex:1 1 auto;min-width:0">${esc(corp + fd(l.name).n)}</span>
+    <select class="lic-rank fld" onchange="luSetLicenseRank(${i},this.value)">
+      ${[1,2,3].map(r=>`<option value="${r}" ${l.rank===r?'selected':''}>${['I','II','III'][r-1]}</option>`).join('')}</select>
+    <button class="btn x" style="flex:0 0 auto" onclick="luRemoveLicense(${i})">✕</button></div>`;
   }).join('');
-  return `<p class="hint">${esc(L('u219'))}</p><p><b>LL: ${calcLL()}</b> · Grit: ${Math.ceil(calcLL()/2)}</p>${rows}`
-  + `<button class="btn primary" ${raised !== null || newAdded ? 'disabled' : ''} onclick="openSearch('license')">＋ ${esc(L('u189'))}</button>`;
+  return `<p class="hint">${esc(L('u219'))}</p><p class="ready-msg ${ok ? 'ok' : 'low'}">${esc(msg)}</p><p><b>LL: ${have}</b> · Grit: ${Math.ceil(have/2)}</p>${rows}`
+  + `<button class="btn primary" onclick="openSearch('license')">＋ ${esc(L('u189'))}</button>`;
 }
 function luRemoveCore(i){
   S.pilot.coreBonuses.splice(i,1);
@@ -6898,6 +6903,10 @@ function luRemoveCore(i){
 }
 function luCore(){
   const newAdded = luNewAdded('coreBonuses') > 0;
+  const have = (S.pilot.coreBonuses||[]).length;
+  const need = coreBonusSlots();
+  const msg = readyMsgText('core', have, need);
+  const ok = have === need;
   const rows = S.pilot.coreBonuses.map((name,i)=>{
     const cb = findCoreBonus(name);
     const disp = cb ? (isRu() ? (cb.ru||cb.n) : cb.n) : name;
@@ -6905,17 +6914,9 @@ function luCore(){
     return `<div class="row"><b style="flex:1 1 auto">${esc(disp)}${isNew ? ' (' + esc(L('u225')).toLowerCase() + ')' : ''}</b>`
     + (isNew ? `<button class="btn x" style="flex:0 0 auto" onclick="luRemoveCore(${i})">✕</button>` : '') + `</div>`;
   }).join('');
-  return `<p class="hint">${esc(L('u220'))}</p><p><b>${esc(L('u196'))}: ${S.pilot.coreBonuses.length} / ${coreBonusSlots()}</b></p>${rows}`
+  return `<p class="hint">${esc(L('u220'))}</p><p class="ready-msg ${ok ? 'ok' : 'low'}">${esc(msg)}</p>${rows}`
   + `<button class="btn primary" ${newAdded ? 'disabled' : ''} onclick="openCoreBonusPicker()">＋ ${esc(L('u196'))}</button>`;
 }
-function luDone(){
-  const base = luBaseLL;
-  return `<p class="hint">${esc(L('u210'))}</p>`
-  + `<div class="card" style="background:var(--panel2)"><div><b>${esc(S.pilot.name||'—')}</b>${S.pilot.callsign ? ' ('+esc(S.pilot.callsign)+')' : ''}</div>`
-  + `<div class="dim">LL ${base} → ${calcLL()} · Grit ${Math.ceil(base/2)} → ${Math.ceil(calcLL()/2)}</div>`
-  + `<div class="dim">${esc(L('u189'))}: ${S.pilot.licenses.length} · ${esc(L('u190'))}: ${S.talents.length} · ${esc(L('u191'))}: ${S.triggers.length} · ${esc(L('u196'))}: ${S.pilot.coreBonuses.length}</div></div>`;
-}
-
 bind(); bindDlgHistory(); recalcDerived(); save(); initDb(); renderLists(); renderCounters(); applyLang(); maybeOpenStart();
 const cachedDriveToken=loadCachedDriveToken();
 if(cachedDriveToken){
