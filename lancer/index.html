@@ -1146,7 +1146,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v360</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v361</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
@@ -1536,6 +1536,14 @@ function applyLang(){
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ const e=STR[el.dataset.i18nPh]; if(e) el.placeholder = e[lang()] || e.ru; });
   const lt = document.getElementById('langToggle'); if (lt) lt.classList.toggle('on', lang()==='en');
   syncInputs(); renderLists(); renderCounters();
+  // v361: переключение языка перерисовывает и открытый полноэкранный вид —
+  // иначе список лицензий (и остальные списки, детали, старт, левел ап)
+  // остаётся на старом языке, хотя главная уже перерисовалась.
+  if (searchViewOpen()) searchDlgRenderTop();
+  if (startViewOpen()) renderStart();
+  if (luViewOpen()) luRenderStep();
+  if (cbViewOpen()) openCoreBonusPicker();
+  if (pilotGearViewOpen()){ const pgi = document.getElementById('pilotGearSearch'); renderPilotGearResults(pgi ? pgi.value : ''); }
 }
 function setLang(l){ S.settings.lang=l; save(); applyLang(); }
 function toggleLang(){ setLang(lang()==='ru' ? 'en' : 'ru'); }
