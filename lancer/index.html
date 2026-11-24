@@ -187,11 +187,10 @@
      глиф не раздувал строку; все чипы в ряду тегов одной высоты. */
   .tag.load-on, .tag.load-off { display:inline-flex; align-items:center; gap:4px; }
   .tag .load-ico { line-height:1; font-size:11px; }
-  .tag .act-ico { line-height:1; font-size:18px; margin-right:4px; font-family:'Noto Sans Math',sans-serif; }
-  /* v371: кастомные сдвиги иконок (shift1 -1px, shift2 -2px) убраны: они
-     настраивались под старые глифы, а символы Noto Sans Math и так стоят
-     по центру строки. Размер 18px (протокол 16px) не менялся. */
-  .tag .act-ico.proto { font-size:16px; }
+  .tag .act-ico { line-height:1; font-size:18px; margin-right:4px; font-family:'Noto Sans Math',sans-serif; transform:translateY(1px); }
+  /* v372: все иконки — на 1px вниз (символы Noto Sans Math сидят чуть высоко);
+     протокол ≡ — как раньше: 16px и без сдвига. */
+  .tag .act-ico.proto { font-size:16px; transform:none; }
   dialog { background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:12px; padding:16px 18px; max-width:450px; width:calc(100% - 40px); }
   dialog::backdrop { background:rgba(0,0,0,.6); }
   dialog h3 { margin:0 0 8px; font-size:16px; }
@@ -874,61 +873,13 @@
       <div id="myActions"></div>
     </details>
     <!-- v362: Стандартные действия — чипами, как «Твои действия», но белыми;
-         старые текстовые разделы справки ниже не тронуты. -->
+         v372: старые текстовые разделы справки (Быстрые/Полные/Реакции/Пилот)
+         удалены — их заменяют чипы; STR u103–u140 остались для чипов и диалога. -->
     <details class="sec">
       <summary data-i18n="u273">Стандартные действия</summary>
       <div id="stdActions"></div>
     </details>
-    <details class="sec">
-      <summary data-i18n="u103">Быстрые действия</summary>
-      <ul>
-        <li data-i18n="u104"><b>Boost (Ускорение)</b> — дополнительное движение до Speed, сверх стандартного.</li>
-        <li data-i18n="u105"><b>Skirmish (Схватка)</b> — атака одним оружием по цели в пределах дальности (или угрозы). Можно добавить вспомогательное (Aux) оружие с того же маунта (без бонусного урона). Сверхтяжёлое оружие так не стреляет — только в Barrage.</li>
-        <li data-i18n="u106"><b>Ram (Таран)</b> — рукопашная атака по соседней цели того же размера или меньше. При попадании цель падает Prone, и её можно оттолкнуть на 1 клетку от себя.</li>
-        <li data-i18n="u107"><b>Grapple (Захват)</b> — рукопашная атака по соседней цели. При попадании оба в контакте; никто не может Boost и брать реакции, пока захват длится; меньший становится Immobilized и движется вместе с большим. Захват кончается, когда разорвана смежность, атакующий отпускает (свободное действие) или защищающийся вырывается (контест Hull как быстрое действие).</li>
-        <li data-i18n="u108"><b>Hide (Спрятаться)</b> — получить Hidden. Требования: не в контакте и вне линии видимости врагов, за достаточным укрытием или Invisible.</li>
-        <li data-i18n="u109"><b>Search (Поиск)</b> — найти скрытого: выбрать персонажа в пределах Sensors, контест Systems против его Agility. При успехе цель теряет Hidden.</li>
-        <li data-i18n="u110"><b>Activate (Активация)</b> — использовать систему или снаряжение, требующее быстрого действия.</li>
-      </ul>
-      <!-- v282: Quick Tech — перед «Другими действиями» -->
-      <h3 data-i18n="u111">Quick Tech — опции</h3>
-      <ul>
-        <li data-i18n="u112"><b>Bolster (Поддержка)</b> — персонаж в пределах Sensors получает +2 Accuracy на следующую проверку или спасбросок до конца своего следующего хода.</li>
-        <li data-i18n="u113"><b>Lock On (Захват цели)</b> — цель в пределах Sensors и линии видимости получает условие Lock On.</li>
-        <li data-i18n="u114"><b>Scan (Сканирование)</b> — узнать об объекте или персонаже в пределах Sensors и линии видимости: оружие, системы и полные статы; или один скрытый факт; или общую информацию. GM отвечает честно.</li>
-        <li data-i18n="u115"><b>Invade (Вторжение)</b> — тех-атака против E-Defense цели в пределах Sensors и линии видимости. При успехе цель получает 2 тепла, и ты выбираешь опцию вторжения. Базовая — Fragment Signal: цель Impaired и Slowed до конца своего следующего хода. Вторжение в согласного союзника автоматически успешно, не считается атакой и не наносит тепла.</li>
-      </ul>
-      <h3 data-i18n="u124">Другие действия</h3>
-      <ul>
-        <li data-i18n="u126"><b>Eject (Катапультирование)</b> — быстрое; улететь на 6 клеток в любом направлении. Одноразово: мех становится Impaired, повторить можно только после полного ремонта.</li>
-        <li data-i18n="u127"><b>Prepare (Подготовка)</b> — быстрое; подготовить другое быстрое действие с триггером «когда X, то Y». До начала следующего хода при срабатывании выполняешь его как реакцию. После подготовки нельзя двигаться и брать другие действия/реакции, пока не сработает или не начнётся следующий ход.</li>
-        <li data-i18n="u128"><b>Self-Destruct (Самоуничтожение)</b> — быстрое; в конце следующего хода (или одного из ходов в течение двух раундов) мех взрывается как при расплавлении реактора: Burst 2, 4d6 взрывного урона, спасбросок Agility на половину.</li>
-        <li data-i18n="u129"><b>Shut Down (Отключение)</b> — быстрое; мех выключается и получает Shut Down (см. статусы).</li>
-      </ul>
-    </details>
-    <details class="sec">
-      <summary data-i18n="u116">Полные действия</summary>
-      <ul>
-        <li data-i18n="u117"><b>Barrage (Залп)</b> — атака двумя оружиями или одним сверхтяжёлым, по одной или разным целям. Можно добавить Aux-оружие с каждого использованного маунта. Сверхтяжёлое оружие — только так.</li>
-        <li data-i18n="u118"><b>Disengage (Отход)</b> — до конца хода игнорируешь engagement, движение не провоцирует реакции.</li>
-        <li data-i18n="u119"><b>Full Tech (Полный тех)</b> — две опции Quick Tech (можно одну и ту же дважды) или одна система/тех-опция, требующая Full Tech.</li>
-        <li data-i18n="u120"><b>Improvised Attack (Импровизированная атака)</b> — рукопашная атака по соседней цели подручным предметом: при успехе 1d6 кинетического урона.</li>
-        <li data-i18n="u121"><b>Stabilize (Стабилизация)</b> — выбрать одно: (а) сбросить весь нагрев и снять Exposed; (б) потратить 1 Repair и восстановить всё HP. Плюс одно из: перезарядить всё оружие с Loading; снять Burn; снять условие, вызванное не твоими системами/талантами; снять условие у соседнего союзника.</li>
-        <li data-i18n="u122"><b>Boot Up (Запуск)</b> — включить мех, снять Shut Down.</li>
-        <li data-i18n="u123"><b>Skill Check (Проверка навыка)</b> — действие с целью и шансом провала, не покрытое другими действиями (GM задаёт параметры).</li>
-        <li data-i18n="u125"><b>Mount / Dismount (Сесть / Слезть)</b> — полное; сесть — нужно стоять рядом с мехом.</li>
-      </ul>
-    </details>
-    <details class="sec">
-      <summary data-i18n="u130">Реакции</summary>
-      <ul>
-        <li data-i18n="u131"><b>Overwatch (Дозор, 1/раунд)</b> — триггер: враждебный персонаж начинает движение в пределах угрозы (Threat) одного из твоих оружий. Эффект: немедленно Skirmish этим оружием по нему, до того как он двинется.</li>
-        <li data-i18n="u132"><b>Brace (Укрытие, 1/раунд)</b> — триггер: по тебе попали и урон уже брошен. Эффект: сопротивление всему урону, теплу и Burn от этой атаки; до конца твоего следующего хода все остальные атаки по тебе — с +1 Difficulty. Цена: нельзя брать реакции до конца следующего хода, а в этот ход — только одно быстрое действие (без оверчарджа, движения, полных и свободных действий).</li>
-        <li data-i18n="u133">Другие реакции дают системы и таланты.</li>
-      </ul>
-
-    </details>
-    <details class="sec">
+                <details class="sec">
       <summary data-i18n="u233">Статусы</summary>
       <div class="status-ref-list" id="statusRef"></div>
     </details>
@@ -949,16 +900,7 @@
       </ul>
       <button class="btn link link-amber" type="button" onclick="fullRepair()" data-i18n="apply_full_repair">Применить Полный Ремонт</button>
     </details>
-    <details class="sec">
-      <summary data-i18n="u136">Действия пилота (пешком)</summary>
-      <ul>
-        <li data-i18n="u137"><b>Fight (Бой, полное)</b> — атака одним оружием в пределах дальности и линии видимости.</li>
-        <li data-i18n="u138"><b>Jockey (Оседлать, полное)</b> — рядом с мехом, контест навыка (Grit или триггер) против Hull меха. При успехе забираешься на него и выбираешь: Distract (мех Impaired и Slowed до конца следующего хода), Shred (2 тепла меху) или Damage (4 кинетического урона).</li>
-        <li data-i18n="u139"><b>Reload (Перезарядка, быстрое)</b> — перезарядить одно оружие пилота с Loading.</li>
-        <li data-i18n="u140">Пешком пилот также может: Boost, Hide, Search, Activate, Skill Check, Disengage, Prepare, Mount, Overwatch.</li>
-      </ul>
-    </details>
-    <details class="sec">
+        <details class="sec">
       <summary data-i18n="u097">Ход и структура боя</summary>
       <ul>
         <li data-i18n="u098">На своём ходу: <b>1 стандартное движение</b> (до значения Speed) и либо <b>2 быстрых действия</b>, либо <b>1 полное действие</b>.</li>
@@ -1168,7 +1110,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v371</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v372</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
