@@ -1190,7 +1190,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v395</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v396</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
@@ -3140,7 +3140,10 @@ const ACTIONS_REF = {
      tx_en:'Protocol (1 CP): You may use your Truesilver trait three more times this Scene.'},
     {key:'convergencepoint', name:'Convergence Point', ru:'Точка схождения', grant:{frame:'Amber Phantom'},
      tx_ru:'Протокол (1 CP): Выберите одного союзного персонажа, который ещё не ходил в этом раунде. Этот персонаж может сделать свой ход либо сразу после окончания вашего хода, либо он может сделать свой ход прямо сейчас, до того как вы сделаете что-либо ещё, приостановив ваш собственный ход до окончания его хода. Если он решит действовать сейчас, он считается действующим раньше вас в порядке ходов игроков. Эта способность эффективна и вернёт 1 очко ядра в конце любой сцены, в которой она использовалась.',
-     tx_en:'Protocol (1 CP): Choose one allied character that has not taken their turn this round. That character may take their turn either immediately after your turn ends, or they may take their turn now before you do anything else, pausing your own turn until their turn ends. If they choose to act now, they count as acting before you in the PC turn order. This ability is Efficient and will refund 1 Core Point at the end of any scene in which this ability was used.'}
+     tx_en:'Protocol (1 CP): Choose one allied character that has not taken their turn this round. That character may take their turn either immediately after your turn ends, or they may take their turn now before you do anything else, pausing your own turn until their turn ends. If they choose to act now, they count as acting before you in the PC turn order. This ability is Efficient and will refund 1 Core Point at the end of any scene in which this ability was used.'},
+    {key:'everestpowerup', name:'Everest Power Up', ru:'Разгон Реактора', grant:{frame:'Everest'}, per:'1/scene',
+     tx_ru:'Протокол, на сцену: до конца этой сцены вы получаете +1 к точности всех атак, проверок и спасбросков; кроме того, 1/ход вы можете сделать Рывок как свободное действие.',
+     tx_en:'Protocol, 1/scene: for the rest of this scene, you gain +1 Accuracy on all attacks, checks, and saves; additionally, 1/turn you may Boost as a free action.'}
   ],
   quick: [
     {key:'activaterestockdrone', name:'Activate Restock Drone', ru:'Активировать дрон снабжения', grant:{system:'Restock Drone'},
