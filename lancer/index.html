@@ -1158,7 +1158,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v366</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v367</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
@@ -5146,6 +5146,10 @@ function isFullAction(a){
   return /^full action/i.test(a.tx_en||'') || /^full tech/i.test(a.tx_en||'') || /^полное действие/i.test(a.tx_ru||'') || /^полная техника/i.test(a.tx_ru||'');
 }
 function isFullTech(a){
+  // v367: Широкозонный кодовый импульс (Chomolungma) — в тексте стоит
+  // «Full Action», но это особая техатака «Вторжение», т.е. по сути
+  // Full Tech (◆), а не обычное полное действие (●) вроде Barrage
+  if (a.key === 'wideareacodepulse') return true;
   return /^full tech/i.test(a.tx_en||'') || /^полная техника/i.test(a.tx_ru||'');
 }
 // v319: быстрая техника — текст начинается с Quick Tech / «Быстрая техника».
