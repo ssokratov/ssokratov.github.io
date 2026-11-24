@@ -188,9 +188,9 @@
   .tag.load-on, .tag.load-off { display:inline-flex; align-items:center; gap:4px; }
   .tag .load-ico { line-height:1; font-size:11px; }
   .tag .act-ico { line-height:1; font-size:18px; margin-right:4px; font-family:'Noto Sans Math',sans-serif; transform:translateY(1px); }
-  /* v372: все иконки — на 1px вниз (символы Noto Sans Math сидят чуть высоко);
-     протокол ≡ — как раньше: 16px и без сдвига. */
-  .tag .act-ico.proto { font-size:16px; transform:none; }
+  /* v372: все иконки — на 1px вниз (символы Noto Sans Math сидят чуть высоко).
+     v374: протокол ≡ — без трансформа, но шрифт 18, как все. */
+  .tag .act-ico.proto { transform:none; }
   dialog { background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:12px; padding:16px 18px; max-width:450px; width:calc(100% - 40px); }
   dialog::backdrop { background:rgba(0,0,0,.6); }
   dialog h3 { margin:0 0 8px; font-size:16px; }
@@ -1110,7 +1110,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v372</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v374</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
@@ -5004,7 +5004,7 @@ function refChip(kind, key, label, stop, extraCls){
   // v319: у чипов действий — иконка типа (○ ◐ ● ◈ ◆ ↪ ≡) перед названием
   // v323/v324: раньше глифы сидели низко и сдвигались вверх (shift1 -1px,
   // shift2 -2px); v371: сдвиги убраны — символы Noto Sans Math и так
-  // стоят по центру строки. Протокол ≡ — 16px (при 18px он хуже, чем был).
+  // стоят по центру строки. v374: протокол ≡ — 18px, как все, без сдвига.
   // v366: опция Вторжения — жёлтый чип .tag.tech везде, где бы она ни показывалась
   // (в «Твоих действиях», на карточках систем/талантов, в деталях лицензий);
   // поэтому проверка — здесь, в refChip, а не у каждого вызова.
