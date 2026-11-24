@@ -22,7 +22,11 @@
   :root { --bg:#0e1116; --panel:#171c24; --panel2:#1e2530; --line:#2c3542; --text:#e8ecf1; --dim:#9aa7b5; --accent:#e8590c; --accent2:#4dabf7; --good:#51cf66; --bad:#ff6b6b; --hud-amber:#ffb000; --hud-amber-dim:rgba(255,176,0,.45); --hud-grid:rgba(255,255,255,.028); }
   * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html { overflow-x:clip; }
-  body { margin:0; background-color:var(--bg); background-image:linear-gradient(var(--hud-grid) 1px, transparent 1px), linear-gradient(90deg, var(--hud-grid) 1px, transparent 1px); background-size:28px 28px; color:var(--text); font-family:Roboto,system-ui,-apple-system,"Segoe UI",sans-serif; overflow-x:hidden; }
+  /* v382: body — flex-колонка на всю высоту вьюпорта (100dvh — с учётом
+     динамической панели мобильного браузера), чтобы футер прилипал к низу
+     на коротких экранах (margin-top:auto у .footer-links заполняет
+     свободное место); на длинных экранах футер просто идёт после контента. */
+  body { display:flex; flex-direction:column; min-height:100vh; min-height:100dvh; margin:0; background-color:var(--bg); background-image:linear-gradient(var(--hud-grid) 1px, transparent 1px), linear-gradient(90deg, var(--hud-grid) 1px, transparent 1px); background-size:28px 28px; color:var(--text); font-family:Roboto,system-ui,-apple-system,"Segoe UI",sans-serif; overflow-x:hidden; }
   /* v258: нижняя панель «Закрыть» полноэкранных видов — тот же навбар
      (фон, высота, оформление), только вместо вкладок одна кнопка закрытия,
      чтобы казалось, что навбар на месте. */
@@ -40,7 +44,10 @@
   /* Линза выбранного таба (v79): прямоугольник на всю кнопку (треть ширины навбара)
      и на всю его высоту; один элемент, честно скользит между кнопками через transform */
   .nav-lens { position:absolute; top:0; bottom:0; left:8px; width:calc((100% - 16px) / 3); background:linear-gradient(180deg, rgb(255 176 0 / 21%) 0%, transparent 45%); box-shadow:0 0 18px rgb(0 0 0 / 39%), inset 0 1px 0 0 rgb(255 176 0 / 45%); pointer-events:none; z-index:0; transition:transform .25s ease; }
-  main { padding-bottom: 72px; max-width:450px; margin:0 auto; }
+  /* v382: нижний отступ main — 10px, а не 72px: фиксированную навигацию
+     теперь прикрывает сам футер (у него padding-bottom:72px), а 72px у main
+     давали огромный зазор перед футером на длинных экранах. */
+  main { padding-bottom:10px; max-width:450px; margin:0 auto; }
   section.tab { display:none; }
   section.tab.active { display:block; }
   /* Смена вкладок (v78): transform-слайд убран — он ронял навигацию на Android;
@@ -593,8 +600,13 @@
   .pilot-equip-desc { color:var(--dim); font-size:13px; line-height:1.45; margin-top:5px; }
   .pilot-equip-add { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-top:10px; }
   .pilot-equip-add .btn { min-width:0; padding:8px 5px; font-size:12px; }
-  /* v360: строка футера — вне <main>, всегда внизу каждого экрана. */
-  .footer-links { display:flex; justify-content:space-evenly; align-items:center; gap:8px; max-width:450px; margin:10px auto 0; padding:0 16px 72px; }
+  /* v360: строка футера — вне <main>, всегда внизу каждого экрана.
+     v382: margin-top:auto — в flex-колонке body футер прилипает к низу,
+     когда контент короткий (Правила и другие короткие экраны); на длинных
+     экранах margin-top:auto = 0 и футер просто идёт после контента.
+     padding-bottom:72px оставлен — он прикрывает футер от фиксированной
+     навигации. */
+  .footer-links { display:flex; justify-content:space-evenly; align-items:center; gap:8px; max-width:450px; margin:auto auto 0; padding:0 16px 72px; }
   .footer-links a { color:var(--dim); font-size:13px; text-decoration:none; }
   .footer-links a:hover { color:var(--hud-amber); text-decoration:underline; }
   .footer-links .sep { color:var(--dim); font-size:13px; }
@@ -634,7 +646,10 @@
      заменяет основной экран целиком (как отдельный таб), фон не скроллится,
      инпут — обычное видимое поле. Нижний отступ — под панель «Закрыть»,
      как у main под навбар. */
-  #searchView, #cbView, #pilotGearView, #startView, #luView { display:none; max-width:450px; margin:0 auto; padding:16px 16px 72px; }
+  /* v382: нижний отступ вьюх — 10px, а не 72px: фиксированную навигацию
+     прикрывает футер (padding-bottom:72px), а 72px у вьюхи давали огромный
+     зазор перед футером. */
+  #searchView, #cbView, #pilotGearView, #startView, #luView { display:none; max-width:450px; margin:0 auto; padding:16px 16px 10px; }
   .search-dlg { max-width:450px; margin:0 auto; }
   .btn.icon { padding:8px 12px; font-size:18px; line-height:1; }
   /* Плюс в кнопках добавления внутри поисков (v172): жёлтый, шрифт крупнее, а размер кнопки тот же,
@@ -1145,7 +1160,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v381</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v382</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
