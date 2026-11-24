@@ -53,7 +53,7 @@
      давали огромный зазор перед футером на длинных экранах.
      v383: main — flex:1: именно он растягивается и прижимает футер к низу
      на коротких экранах (надёжнее margin-top:auto у футера). */
-  main { flex:1; padding-bottom:10px; max-width:600px; margin:0 auto; }
+  main { flex:1; width:100%; padding-bottom:10px; max-width:600px; margin:0 auto; }
   section.tab { display:none; }
   section.tab.active { display:block; }
   /* Смена вкладок (v78): transform-слайд убран — он ронял навигацию на Android;
@@ -543,14 +543,23 @@
   #coreBtn.cp-used .cp-core { fill:#2c3542; }
   #coreBtn.cp-used .cp-rim { stroke:#3a4556; }
   #coreBtn.cp-used .cp-label { fill:#7a8794; }
-  details.sec, div.sec-link { background:var(--panel); border:1px solid var(--line); border-top:2px solid var(--hud-amber); border-radius:0; padding:12px 14px; }
-  details.sec summary, div.sec-link .sec-link-title { cursor:pointer; font-weight:700; font-size:15px; color:var(--hud-amber); text-transform:uppercase; letter-spacing:.08em; }
+  /* v405: секции Правил — div с кареткой и плавным разворачиванием
+     (были нативные <details>: они не анимируются, а их маркер-стрелку
+     нельзя повернуть; плюс main без width:100% сужался под их короткие
+     заголовки — вкладка была не на всю ширину). */
+  div.sec.rules-sec, div.sec-link { background:var(--panel); border:1px solid var(--line); border-top:2px solid var(--hud-amber); border-radius:0; padding:12px 14px; width:100%; }
+  .rules-sec-head { cursor:pointer; display:flex; align-items:center; gap:8px; font-weight:700; font-size:15px; color:var(--hud-amber); text-transform:uppercase; letter-spacing:.08em; }
+  .rules-sec-arrow { color:var(--hud-amber); font-size:11px; line-height:1; transition:transform .15s; flex:0 0 auto; }
+  .rules-sec.open .rules-sec-arrow { transform:rotate(90deg); }
+  .rules-sec-body { display:grid; grid-template-rows:minmax(0, 0fr); overflow:hidden; transition:grid-template-rows .35s ease; }
+  .rules-sec.open .rules-sec-body { grid-template-rows:minmax(0, 1fr); }
+  .rules-sec-body > * { min-height:0; overflow:hidden; }
   div.sec-link { cursor:pointer; }
   div.sec-link .sec-link-title { display:flex; align-items:center; gap:8px; }
-  details.sec h3 { margin:14px 0 6px; font-size:14px; color:var(--text); }
-  details.sec ul { margin:4px 0 10px; padding-left:20px; }
-  details.sec li { margin-bottom:7px; font-size:14px; line-height:1.5; }
-  details.sec p { font-size:14px; line-height:1.5; }
+  .rules-sec-body h3 { margin:14px 0 6px; font-size:14px; color:var(--text); }
+  .rules-sec-body ul { margin:4px 0 10px; padding-left:20px; }
+  .rules-sec-body li { margin-bottom:7px; font-size:14px; line-height:1.5; }
+  .rules-sec-body p { font-size:14px; line-height:1.5; }
   /* Системы — сворачиваемые карточки (v189): заголовок обычный белый, а не жёлтый;
      заряды и теги видны и в свёрнутом виде (в шапке), описание — только в развёрнутом. */
   .sys-head { cursor:pointer; }
@@ -1022,8 +1031,9 @@
 
   <!-- ============ RULES ============ -->
   <section id="tab-rules" class="tab">
-                                    <details class="sec">
-      <summary data-i18n="u097">Ход и структура боя</summary>
+    <div class="sec rules-sec">
+      <div class="rules-sec-head" onclick="toggleRulesSec(this)" role="button"><span class="rules-sec-arrow">▶</span><span data-i18n="u097">Ход и структура боя</span></div>
+      <div class="rules-sec-body">
       <ul>
         <li data-i18n="u098">На своём ходу: <b>1 стандартное движение</b> (до значения Speed) и либо <b>2 быстрых действия</b>, либо <b>1 полное действие</b>.</li>
         <li data-i18n="u099">Одно и то же действие нельзя повторять за ход — кроме Quick Tech (каждый раз другая опция) и свободных действий.</li>
@@ -1031,9 +1041,11 @@
         <li data-i18n="u101"><b>Свободные действия:</b> любое число на своём ходу, но только те, что тебе предоставлены (протоколы, оверчардж и т.п.).</li>
         <li data-i18n="u102">Действие можно выполнить в середине движения, но нужно полностью разрешить его до окончания движения.</li>
       </ul>
-    </details>
-    <details class="sec">
-      <summary data-i18n="u166">Левел ап (повышение LL)</summary>
+      </div>
+    </div>
+    <div class="sec rules-sec">
+      <div class="rules-sec-head" onclick="toggleRulesSec(this)" role="button"><span class="rules-sec-arrow">▶</span><span data-i18n="u166">Левел ап (повышение LL)</span></div>
+      <div class="rules-sec-body">
       <p data-i18n="u167">После каждой миссии — успех или провал, неважно — LL пилота растёт на 1 (максимум LL12). При каждом повышении получи:</p>
       <ul>
         <li data-i18n="u168"><b>+2 к триггеру:</b> +2 к существующему триггеру или новый триггер на +2.</li>
@@ -1059,7 +1071,8 @@
         <li data-i18n="u184"><b>LL9:</b> GRIT 5 · Навыки 11 · Лицензии 9 · Таланты 12 · Core 3 · Триггеры 26</li>
         <li data-i18n="u185"><b>LL12:</b> GRIT 6 · Навыки 14 · Лицензии 12 · Таланты 15 · Core 4 · Триггеры 32</li>
       </ul>
-    </details>
+      </div>
+    </div>
     <div class="sec sec-link" role="button" onclick="openSearch('license')">
       <span class="sec-link-title"><span aria-hidden="true">🔍</span><span data-i18n="u244">Список лицензий</span></span>
     </div>
@@ -1232,7 +1245,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v404</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v405</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
@@ -5521,6 +5534,7 @@ function descBox(key, label, text, ph, saveExpr, editable, alwaysFull, cut){
 function openDesc(key){ openDescs.add(key); renderLists(); }
 function closeDesc(key){ openDescs.delete(key); renderLists(); }
 // Сворачивание систем (v189, div-based): состояние хранится по имени системы.
+function toggleRulesSec(head){ const sec = head.closest('.rules-sec'); if(!sec) return; sec.classList.toggle('open'); }
 function toggleSysCard(head){ const card = head.closest('.sys'); if(!card) return; const n = card.getAttribute('data-sys'); const isOpen = card.classList.toggle('open'); if(!n) return; if(isOpen) openSys.add(n); else openSys.delete(n); persistOpenState(); }
 // Сворачивание оружия (v262, как системы): состояние хранится по «маунт:имя» —
 // одно и то же оружие может стоять в двух маунтах, голое имя не подходит.
