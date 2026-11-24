@@ -10,10 +10,13 @@
 <link rel="apple-touch-icon" href="./app-icon.png">
 <!-- v369: единый шрифт Roboto на всех платформах (Google Fonts); раньше был
      системный набор (system-ui...), поэтому на Андроиде был Roboto, а на
-     Винде — Segoe UI. display=swap — пока шрифт грузится, виден системный. -->
+     Винде — Segoe UI. display=swap — пока шрифт грузится, виден системный.
+     v370: Noto Sans Math — для значков типов действий (.act-ico): Roboto
+     содержит только ○ и ●, а ◐ ◈ ◆ ↪ ≡ в нём нет, и они падали в системный
+     шрифт символов (разный на Винде и Андроиде). Noto Sans Math содержит все 7. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Noto+Sans+Math&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   :root { --bg:#0e1116; --panel:#171c24; --panel2:#1e2530; --line:#2c3542; --text:#e8ecf1; --dim:#9aa7b5; --accent:#e8590c; --accent2:#4dabf7; --good:#51cf66; --bad:#ff6b6b; --hud-amber:#ffb000; --hud-amber-dim:rgba(255,176,0,.45); --hud-grid:rgba(255,255,255,.028); }
@@ -184,7 +187,7 @@
      глиф не раздувал строку; все чипы в ряду тегов одной высоты. */
   .tag.load-on, .tag.load-off { display:inline-flex; align-items:center; gap:4px; }
   .tag .load-ico { line-height:1; font-size:11px; }
-  .tag .act-ico { line-height:1; font-size:18px; margin-right:4px; }
+  .tag .act-ico { line-height:1; font-size:18px; margin-right:4px; font-family:'Noto Sans Math',sans-serif; }
   .tag .act-ico.shift1 { transform:translateY(-1px); }
   .tag .act-ico.shift2 { transform:translateY(-2px); }
   .tag .act-ico.proto { font-size:16px; }
@@ -1164,7 +1167,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v369</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v370</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
