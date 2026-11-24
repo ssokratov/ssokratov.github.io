@@ -301,8 +301,8 @@
   .status-ref-item { display:block; width:100%; text-align:left; background:var(--panel2); border:1px solid var(--line); border-left:3px solid var(--sc,#2c3542); border-radius:0; padding:8px 10px; cursor:pointer; }
   .status-ref-item.on { border-color:var(--sc); }
   .status-ref-name { display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px; }
-  .status-ref-caret { color:var(--dim); font-size:12px; flex:0 0 auto; transition:transform .15s; }
-  .status-ref-item.open .status-ref-caret { transform:rotate(90deg); }
+  .status-ref-check { color:var(--sc); font-size:14px; font-weight:700; flex:0 0 auto; width:16px; text-align:center; visibility:hidden; }
+  .status-ref-item.on .status-ref-check { visibility:visible; }
   .status-ref-desc { font-size:13px; color:var(--dim); line-height:1.4; margin:2px 0 0 16px; }
   .res {  }
   .res label { display:block; text-align:center; color:var(--text); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
@@ -1190,7 +1190,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v392</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v393</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
@@ -6050,6 +6050,8 @@ function renderStatusTags(){
 // v390: кнопки ＋/✓ больше нет — тап по строке одновременно раскрывает
 // описание И накладывает/снимает статус; открыто может быть несколько
 // статусов сразу (правило «один открытый за раз» убрано).
+// v393: каретка ▸ заменена галочкой ✓ — она показывает, что статус
+// активен (наложен); раскрытие видно по самому описанию.
 let statusRefOpen = new Set();
 function toggleStatusRef(s){
   if (statusRefOpen.has(s)) statusRefOpen.delete(s); else statusRefOpen.add(s);
@@ -6063,7 +6065,7 @@ function renderStatusRef(){
     const info = STATUS_INFO[s];
     const on = active.has(s);
     const open = statusRefOpen.has(s);
-    return `<div class="status-ref-item${on ? ' on' : ''}${open ? ' open' : ''}" style="--sc:${info.c}" onclick="toggleStatusRef('${s}')" role="button"><div class="status-ref-name"><span class="status-ref-caret">▸</span><span style="flex:1 1 auto">${esc(statusLabel(s))}</span></div>${open ? `<div class="status-ref-desc">${esc(statusDesc(s))}</div>` : ''}</div>`;
+    return `<div class="status-ref-item${on ? ' on' : ''}${open ? ' open' : ''}" style="--sc:${info.c}" onclick="toggleStatusRef('${s}')" role="button"><div class="status-ref-name"><span class="status-ref-check">✓</span><span style="flex:1 1 auto">${esc(statusLabel(s))}</span></div>${open ? `<div class="status-ref-desc">${esc(statusDesc(s))}</div>` : ''}</div>`;
   }).join('');
 }
 function toggleStatus(name){
