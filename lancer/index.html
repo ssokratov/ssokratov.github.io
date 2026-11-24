@@ -274,11 +274,13 @@
      Базовый цвет кнопок — сталь панели кор павера (.core-power: #454e5e →
      #2b323e → #1a1f28), но перевёрнутая под свет снизу: тёмная сталь вверху,
      светлая внизу. Активная кнопка остаётся янтарной (маркер активной
-     вкладки), но её градиент и тени тоже перевёрнуты под свет снизу. */
-  .ref-btn { flex:1 1 0; min-width:0; height:36px; padding:0; font-size:18px; line-height:1; text-align:center; white-space:nowrap; border:1px solid var(--line); border-right:none; border-radius:0; background:linear-gradient(0deg, rgba(255,255,255,.12), rgba(255,255,255,.02) 45%, rgba(0,0,0,.24)), linear-gradient(180deg, #1a1f28 0%, #2b323e 50%, #454e5e 100%); box-shadow:inset 0 1px 0 rgba(0,0,0,.35), inset 0 -1px 0 rgba(255,255,255,.20); color:var(--dim); cursor:pointer; display:flex; align-items:center; justify-content:center; }
-  .ref-btn:last-child { border-right:1px solid var(--line); }
-  .ref-btn.on { background:linear-gradient(0deg, #ffd34d, var(--hud-amber) 55%, #e09600); border-color:var(--hud-amber); color:#1a1a1a; font-weight:700; border-bottom-color:var(--panel); box-shadow:inset 0 1px 0 rgba(0,0,0,.30), inset 0 -1px 0 rgba(255,255,255,.50), inset 0 -3px 5px rgba(255,255,255,.14); }
-  .ref-btn.on + .ref-btn { border-left-color:var(--hud-amber); }
+     вкладки), но её градиент и тени тоже перевёрнуты под свет снизу.
+     v409: верх кнопок НЕ уходит в чёрное (сталь #2b323e вверху вместо #1a1f28,
+     из оверлея убран чёрный); рамок и теней у кнопок нет вовсе — только
+     тонкая линия между кнопками (.ref-btn + .ref-btn border-left). */
+  .ref-btn { flex:1 1 0; min-width:0; height:36px; padding:0; font-size:18px; line-height:1; text-align:center; white-space:nowrap; border:none; border-radius:0; background:linear-gradient(0deg, rgba(255,255,255,.14), rgba(255,255,255,.03) 50%, rgba(255,255,255,0)), linear-gradient(180deg, #2b323e 0%, #39424f 55%, #454e5e 100%); color:var(--dim); cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .ref-btn + .ref-btn { border-left:1px solid var(--line); }
+  .ref-btn.on { background:linear-gradient(0deg, #ffd34d, var(--hud-amber) 55%, #e09600); color:#1a1a1a; font-weight:700; }
   .ref-btn svg { width:18px; height:18px; vertical-align:middle; }
   /* v389: звезда (Твои действия) и кровать (Отдых) — чуть больше, 20px;
      тег (Статусы) и глифы Стандартных остаются 18px.
@@ -1264,7 +1266,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v408</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v409</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
