@@ -1158,7 +1158,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v367</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v368</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
@@ -5058,6 +5058,11 @@ function refChip(kind, key, label, stop, extraCls){
   // v366: опция Вторжения — жёлтый чип .tag.tech везде, где бы она ни показывалась
   // (в «Твоих действиях», на карточках систем/талантов, в деталях лицензий);
   // поэтому проверка — здесь, в refChip, а не у каждого вызова.
+  // v368: жёлтые — все тех-действия (быстрые и полные техники), не только опции
+  // Вторжения: Full Tech в стандартных действиях уже жёлтый, а тех-атаки
+  // достаточно близки к опциям Вторжения. Опции Вторжения — частный случай
+  // быстрой техники (isQuickTech их ловит), поэтому отдельный вызов
+  // isInvadeOption здесь больше не нужен.
   const act = kind === 'action' ? [...(ACTIONS_REF.reactions||[]), ...(ACTIONS_REF.protocols||[]), ...(ACTIONS_REF.quick||[])].find(x=>x.key===key) : null;
   let ico = '';
   if (act){
@@ -5071,7 +5076,7 @@ function refChip(kind, key, label, stop, extraCls){
   // v325: чип оружия — стального цвета, не синий; иконки у него нет и не надо
   let cls = 'tag' + (extraCls ? ' ' + extraCls : '');
   if (kind === 'weapon') cls += ' weapon';
-  if (act && isInvadeOption(act)) cls = 'tag tech';
+  if (act && (isQuickTech(act) || isFullTech(act))) cls = 'tag tech';
   return `<span class="${cls}" onclick="${pre}showRef('${esc(kind)}','${esc(key)}')">${ico}${esc(label)}</span>`;
 }
 function grantLabel(g){
