@@ -155,6 +155,9 @@
   /* v362: чипы стандартных действий — белые (в отличие от синих чипов «Твоих действий»). */
   .tag.std { border-color:#fff; color:#fff; display:inline-flex; align-items:center; }
   .tag.std:hover { border-color:#fff; }
+  /* v364: тех-действия — светло-жёлтые, цвета молнии (не насыщенный жёлтый #ffd43b и не янтарный). */
+  .tag.tech { border-color:#ffe14d; color:#ffe14d; display:inline-flex; align-items:center; }
+  .tag.tech:hover { border-color:#ffe14d; }
   .tag.grant.weapon { border-color:var(--dim); color:var(--dim); }
   .tag.grant.weapon:hover { border-color:var(--dim); }
   /* v290: «Твои действия» — чип с новой строки */
@@ -1155,7 +1158,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v363</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v364</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
@@ -3819,7 +3822,9 @@ function renderStdActions(){
   const en = lang() === 'en';
   // v363: в русском — русское имя + английское в скобках, в английском — только английское
   const nm = a => en ? esc(a.en) : esc(a.ru) + ' (' + esc(a.en) + ')';
-  const chip = a => '<div class="myact-chip"><span class="tag std" onclick="showStdAction(\'' + a.k + '\')">' + stdActionIcon(a) + nm(a) + '</span></div>';
+  // v364: тех-действия (qtech/ftech) — жёлтые чипы .tag.tech, а не белые
+  const isTech = a => a.t === 'qtech' || a.t === 'ftech';
+  const chip = a => '<div class="myact-chip"><span class="tag ' + (isTech(a) ? 'tech' : 'std') + '" onclick="showStdAction(\'' + a.k + '\')">' + stdActionIcon(a) + nm(a) + '</span></div>';
   const groups = [
     {h:'u103', g:'quick'},
     {h:'u116', g:'full'},
@@ -3831,7 +3836,9 @@ function renderStdActions(){
     const list = STANDARD_ACTIONS.filter(a=>a.g===grp.g);
     if (!list.length) continue;
     h += '<h3>' + esc(L(grp.h)) + '</h3>';
-    for (const a of list) h += chip(a);
+    // v364: тех-действия — в конец списка группы (сначала обычные, потом тех)
+    const ordered = list.filter(a=>!isTech(a)).concat(list.filter(a=>isTech(a)));
+    for (const a of ordered) h += chip(a);
   }
   box.innerHTML = h;
 }
