@@ -1232,7 +1232,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v403</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v404</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
@@ -6118,9 +6118,14 @@ function renderStatusTags(){
 // статусов сразу (правило «один открытый за раз» убрано).
 // v393: каретка ▸ заменена галочкой ✓ — она показывает, что статус
 // активен (наложен); раскрытие видно по самому описанию.
-let statusRefOpen = new Set();
+// v404: ОДИН глаз состояния — раскрытие строки = наложен ли статус.
+// Раньше был отдельный Set statusRefOpen (раскрытие) и S.statuses
+// (наложение), и они расходились: крестик на чипе снимал статус, а
+// строка оставалась раскрытой; тап по ней сворачивал её, но ЗАНОВО
+// накладывал статус. Теперь open берётся из S.statuses, а отдельного
+// состояния раскрытия нет вовсе: снял статус любым путём (чип, тап,
+// отдых) — строка свернулась; наложил — развернулась.
 function toggleStatusRef(s){
-  if (statusRefOpen.has(s)) statusRefOpen.delete(s); else statusRefOpen.add(s);
   toggleStatus(s);
 }
 function renderStatusRef(){
@@ -6130,7 +6135,7 @@ function renderStatusRef(){
   box.innerHTML = STATUSES.filter(s => s !== 'Danger Zone' && STATUS_INFO[s]).map(s => {
     const info = STATUS_INFO[s];
     const on = active.has(s);
-    const open = statusRefOpen.has(s);
+    const open = on; // v404: раскрыта та же строка, что наложена
     return `<div class="status-ref-item${on ? ' on' : ''}${open ? ' open' : ''}" style="--sc:${info.c}" onclick="toggleStatusRef('${s}')" role="button"><div class="status-ref-name"><span class="status-ref-check">✓</span><span style="flex:1 1 auto">${esc(statusLabel(s))}</span></div>${open ? `<div class="status-ref-desc">${esc(statusDesc(s))}</div>` : ''}</div>`;
   }).join('');
 }
