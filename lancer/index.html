@@ -192,12 +192,18 @@
      v374: протокол ≡ — без трансформа, но шрифт 18, как все. */
   .tag .act-ico.proto { transform:none; }
   /* v375: панель справок на главной — низкая, 4 кнопки-таба в ряд; активная
-     кнопка — янтарная (как HUD), неактивные — тусклые; контент — под панелью. */
+     кнопка — янтарная (как HUD), неактивные — тусклые; контент — под панелью.
+     v376: кнопки квадратные, без зазора между ними (общая граница), тело
+     присоединено к кнопкам (без верхней границы и без отступа) — как вкладки;
+     у активной кнопки нижняя граница цвета фона тела, чтобы она «вливалась»
+     в секцию; иконки вместо текста. */
   .ref-panel { margin:10px 0; }
-  .ref-btns { display:flex; gap:6px; }
-  .ref-btn { flex:1 1 0; min-width:0; padding:7px 2px; font-size:13px; line-height:1.15; text-align:center; border:1px solid var(--line); border-radius:6px; background:var(--panel2); color:var(--dim); cursor:pointer; }
-  .ref-btn.on { background:var(--hud-amber); border-color:var(--hud-amber); color:#1a1a1a; font-weight:700; }
-  .ref-body { margin-top:8px; padding:10px; border:1px solid var(--line); border-radius:6px; background:var(--panel); }
+  .ref-btns { display:flex; gap:0; }
+  .ref-btn { flex:1 1 0; min-width:0; padding:8px 2px; font-size:18px; line-height:1; text-align:center; border:1px solid var(--line); border-right:none; border-radius:0; background:var(--panel2); color:var(--dim); cursor:pointer; }
+  .ref-btn:last-child { border-right:1px solid var(--line); }
+  .ref-btn.on { background:var(--hud-amber); border-color:var(--hud-amber); color:#1a1a1a; font-weight:700; border-bottom-color:var(--panel); }
+  .ref-btn.on + .ref-btn { border-left-color:var(--hud-amber); }
+  .ref-body { margin-top:0; padding:10px; border:1px solid var(--line); border-top:none; border-radius:0; background:var(--panel); }
   .ref-body[hidden], .ref-pane[hidden] { display:none; }
   dialog { background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:12px; padding:16px 18px; max-width:450px; width:calc(100% - 40px); }
   dialog::backdrop { background:rgba(0,0,0,.6); }
@@ -770,10 +776,10 @@
          сюда из Правил (там остались только Ход боя и Левел ап). -->
     <div class="ref-panel" id="refPanel">
       <div class="ref-btns" role="tablist">
-        <button type="button" class="ref-btn" id="refBtn-my" data-ref="my" aria-pressed="false" onclick="toggleRef('my')" data-i18n="u229">Твои действия</button>
-        <button type="button" class="ref-btn" id="refBtn-std" data-ref="std" aria-pressed="false" onclick="toggleRef('std')" data-i18n="u274">Стандартные</button>
-        <button type="button" class="ref-btn" id="refBtn-status" data-ref="status" aria-pressed="false" onclick="toggleRef('status')" data-i18n="u233">Статусы</button>
-        <button type="button" class="ref-btn" id="refBtn-rest" data-ref="rest" aria-pressed="false" onclick="toggleRef('rest')" data-i18n="u275">Отдых и ремонт</button>
+        <button type="button" class="ref-btn" id="refBtn-my" data-ref="my" aria-pressed="false" aria-label="Твои действия" title="Твои действия" onclick="toggleRef('my')">⚡</button>
+        <button type="button" class="ref-btn" id="refBtn-std" data-ref="std" aria-pressed="false" aria-label="Стандартные действия" title="Стандартные действия" onclick="toggleRef('std')">📖</button>
+        <button type="button" class="ref-btn" id="refBtn-status" data-ref="status" aria-pressed="false" aria-label="Статусы" title="Статусы" onclick="toggleRef('status')">🏷️</button>
+        <button type="button" class="ref-btn" id="refBtn-rest" data-ref="rest" aria-pressed="false" aria-label="Отдых и ремонт" title="Отдых и ремонт" onclick="toggleRef('rest')">🛏️</button>
       </div>
       <div class="ref-body" id="refBody" hidden>
         <div class="ref-pane" id="refPane-my" hidden><div id="myActions"></div></div>
@@ -1119,7 +1125,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v375</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v376</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
