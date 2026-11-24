@@ -1158,7 +1158,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v365</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v366</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
@@ -3752,8 +3752,7 @@ function renderMyActions(){
     box.innerHTML = '<p class="hint">' + esc(L('u232')) + '</p>';
     return;
   }
-  // v365: опции Вторжения в «Твоих действиях» — жёлтые чипы .tag.tech, как тех-действия в стандартных
-  const chip = a => '<div class="myact-chip">' + refChip('action', a.key, actionLabel(a.key), false, isInvadeOption(a) ? 'tech' : 'grant') + '</div>';
+  const chip = a => '<div class="myact-chip">' + refChip('action', a.key, actionLabel(a.key), false, 'grant') + '</div>';
   let h = '';
   if(myQk.length){
     h += '<h3>' + esc(L('u235')) + '</h3>';
@@ -5056,21 +5055,23 @@ function refChip(kind, key, label, stop, extraCls){
   // v324: сдвиг по глифам — круги/ромбы -1px (при -2px они высоковато),
   // стрелка реакции -2px (так отлично), протокол ≡ без сдвига и 16px
   // (при 18px он хуже, чем был).
+  // v366: опция Вторжения — жёлтый чип .tag.tech везде, где бы она ни показывалась
+  // (в «Твоих действиях», на карточках систем/талантов, в деталях лицензий);
+  // поэтому проверка — здесь, в refChip, а не у каждого вызова.
+  const act = kind === 'action' ? [...(ACTIONS_REF.reactions||[]), ...(ACTIONS_REF.protocols||[]), ...(ACTIONS_REF.quick||[])].find(x=>x.key===key) : null;
   let ico = '';
-  if (kind === 'action'){
-    const a = [...(ACTIONS_REF.reactions||[]), ...(ACTIONS_REF.protocols||[]), ...(ACTIONS_REF.quick||[])].find(x=>x.key===key);
-    if (a){
-      const ic = actionTypeIcon(a);
-      let cls = 'act-ico';
-      if (ic === '≡') cls += ' proto';
-      else if (ic === '↪') cls += ' shift2';
-      else cls += ' shift1';
-      ico = '<span class="' + cls + '">' + ic + '</span> ';
-    }
+  if (act){
+    const ic = actionTypeIcon(act);
+    let cls = 'act-ico';
+    if (ic === '≡') cls += ' proto';
+    else if (ic === '↪') cls += ' shift2';
+    else cls += ' shift1';
+    ico = '<span class="' + cls + '">' + ic + '</span> ';
   }
   // v325: чип оружия — стального цвета, не синий; иконки у него нет и не надо
   let cls = 'tag' + (extraCls ? ' ' + extraCls : '');
   if (kind === 'weapon') cls += ' weapon';
+  if (act && isInvadeOption(act)) cls = 'tag tech';
   return `<span class="${cls}" onclick="${pre}showRef('${esc(kind)}','${esc(key)}')">${ico}${esc(label)}</span>`;
 }
 function grantLabel(g){
