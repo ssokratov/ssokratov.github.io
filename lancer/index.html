@@ -199,20 +199,23 @@
      в секцию; иконки вместо текста.
      v378: панель приклеена к соседним секциям (margin 0) и сверху — стандартная
      жёлтая рамка 2px, как у карточек; иконки — SVG (не эмодзи), у Стандартных —
-     глифы типов действий в ряд (≡ ◐ ◐ ● ↪ — напоминание о стандартном ходе). */
+     глифы типов действий в ряд (≡ ◐ ◐ ● ↪ — напоминание о стандартном ходе).
+     v380: все иконки панели одного размера (18px, нормальный шрифт): SVG 18px,
+     глифы Стандартных — обычный .act-ico 18px без уменьшающего оверрайда;
+     горизонтальные паддинги кнопок и зазоры между глифами убраны, чтобы все
+     5 глифов входили. */
   .ref-panel { margin:0; }
   .ref-btns { display:flex; gap:0; }
-  .ref-btn { flex:1 1 0; min-width:0; padding:8px 2px; font-size:18px; line-height:1; text-align:center; border:1px solid var(--line); border-top:2px solid var(--hud-amber); border-right:none; border-radius:0; background:var(--panel2); color:var(--dim); cursor:pointer; }
+  .ref-btn { flex:1 1 0; min-width:0; padding:8px 0; font-size:18px; line-height:1; text-align:center; white-space:nowrap; border:1px solid var(--line); border-top:2px solid var(--hud-amber); border-right:none; border-radius:0; background:var(--panel2); color:var(--dim); cursor:pointer; }
   .ref-btn:last-child { border-right:1px solid var(--line); }
   .ref-btn.on { background:var(--hud-amber); border-color:var(--hud-amber); color:#1a1a1a; font-weight:700; border-bottom-color:var(--panel); }
   .ref-btn.on + .ref-btn { border-left-color:var(--hud-amber); }
-  .ref-btn svg { width:20px; height:20px; vertical-align:middle; }
-  .ref-btn .act-ico { font-size:13px; margin-right:2px; }
-  .ref-btn .act-ico:last-child { margin-right:0; }
+  .ref-btn svg { width:18px; height:18px; vertical-align:middle; }
+  .ref-btn .act-ico { margin-right:0; }
   .ref-body { margin-top:0; padding:10px; border:1px solid var(--line); border-top:none; border-radius:0; background:var(--panel); }
   /* v377: заголовки внутри панели — поменьше и тусклее (были дефолтные ~18px);
-     v379: шрифт чуток побольше (13px вместо 12px) */
-  .ref-body h3 { margin:10px 0 6px; font-size:13px; color:var(--dim); }
+     v379: шрифт чуток побольше (13px вместо 12px); v380: 16px */
+  .ref-body h3 { margin:10px 0 6px; font-size:16px; color:var(--dim); }
   .ref-body h3:first-child { margin-top:0; }
   /* v377: кнопки «Применить» в отдыхе — с рамкой и на всю ширину */
   #refPane-rest .btn { width:100%; margin-top:8px; }
@@ -1137,7 +1140,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v379</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v380</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
