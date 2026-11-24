@@ -1155,7 +1155,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v362</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v363</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
@@ -3817,7 +3817,9 @@ function renderStdActions(){
   const box = document.getElementById('stdActions');
   if (!box) return;
   const en = lang() === 'en';
-  const chip = a => '<div class="myact-chip"><span class="tag std" onclick="showStdAction(\'' + a.k + '\')">' + stdActionIcon(a) + esc(en ? a.en : a.ru) + '</span></div>';
+  // v363: в русском — русское имя + английское в скобках, в английском — только английское
+  const nm = a => en ? esc(a.en) : esc(a.ru) + ' (' + esc(a.en) + ')';
+  const chip = a => '<div class="myact-chip"><span class="tag std" onclick="showStdAction(\'' + a.k + '\')">' + stdActionIcon(a) + nm(a) + '</span></div>';
   const groups = [
     {h:'u103', g:'quick'},
     {h:'u116', g:'full'},
@@ -3840,7 +3842,7 @@ function showStdAction(key){
   const nameEl = document.getElementById('refDlgName');
   const bodyEl = document.getElementById('refDlgBody');
   if (!dlg || !nameEl || !bodyEl) return;
-  nameEl.textContent = lang() === 'en' ? a.en : a.ru;
+  nameEl.textContent = lang() === 'en' ? a.en : a.ru + ' (' + a.en + ')';  // v363: в русском — оба имени
   // описание — из справки; убираем ведущее «<b>Имя</b> — », оно уже в заголовке
   const body = (L(a.s) || '').replace(/^<b>.*?<\/b>\s*—\s*/, '');
   bodyEl.innerHTML = linkTagTerms(esc(body));
