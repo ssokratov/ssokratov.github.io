@@ -267,7 +267,7 @@
      под ≡ и ↪, которых больше нет) — ● и ◐ сидят на одной линии.
      v387: круги ещё меньше — 18px. */
   .ref-panel { margin:0; }
-  .ref-btns { display:flex; gap:0; background:linear-gradient(180deg, rgba(255,176,0,.10), rgba(255,176,0,0) 30%), linear-gradient(180deg, #2b333f 0%, #1d232d 55%, #14181f 100%); box-shadow:inset 0 1px 0 rgba(255,255,255,.07); }
+  .ref-btns { display:flex; gap:0; background:linear-gradient(0deg, rgba(255,176,0,.10), rgba(255,176,0,0) 30%), linear-gradient(0deg, #2b333f 0%, #1d232d 55%, #14181f 100%); box-shadow:inset 0 -1px 0 rgba(255,255,255,.07); }
   /* v400: кнопкам сверху добавлен объём — вертикальный градиент и
      внутренние тени (блик сверху, тень снизу), чтобы не выглядели плоскими. */
   /* v401: жёлтая рамка перед панелью убрана — у кнопок больше нет жёлтого
@@ -297,12 +297,16 @@
      кнопками нет; активная — янтарная иконка со свечением линзы
      (rgb(255 176 0 / 21%) → transparent 45%) и увеличением 1.3× с
      тенью, как активная кнопка навбара. Стальной градиент #454e5e/#2b323e
-     и янтарный градиент активной кнопки убраны. В мастере левелапа —
+     и янтарный градиент активной кнопки убраны.
+     v417: вертикальная инверсия (свет снизу, как в v408): градиенты
+     полосы и свечения активной кнопки — 0deg вместо 180deg (янтарное
+     свечение и светлая сталь внизу, тёмная вверху), светлая линия inset
+     — снизу, а не сверху. В мастере левелапа —
      нижняя панель «Закрыть» (.view-close-bar, как у остальных полноэкранных
      видов), которая полностью закрывает мастер через closeLevelUp(). */
   .ref-btn { flex:1 1 0; min-width:0; height:36px; padding:0; font-size:18px; line-height:1; text-align:center; white-space:nowrap; border:none; border-radius:0; background:none; color:var(--dim); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:color .2s ease; }
 
-  .ref-btn.on { background:linear-gradient(180deg, rgb(255 176 0 / 21%) 0%, transparent 45%); color:var(--hud-amber); }
+  .ref-btn.on { background:linear-gradient(0deg, rgb(255 176 0 / 21%) 0%, transparent 45%); color:var(--hud-amber); }
   .ref-btn.on svg, .ref-btn.on .act-ico { filter:drop-shadow(0 3px 2px rgba(0,0,0,1)); transform:scale(1.3); }
   .ref-btn svg { width:18px; height:18px; vertical-align:middle; transition:transform .2s ease, filter .2s ease; }
   /* v389: звезда (Твои действия) и кровать (Отдых) — чуть больше, 20px;
@@ -1296,7 +1300,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v416</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v417</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
