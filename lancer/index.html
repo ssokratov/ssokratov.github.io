@@ -1190,7 +1190,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v394</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v395</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
@@ -3656,9 +3656,12 @@ const ACTIONS_REF = {
     {key:'gilgameshrepair', name:'Gilgamesh Field Repair', ru:'Полевой ремонт «Гильгамеша»', grant:{frame:'Gilgamesh'}, per:'1/scene',
      tx_ru:'Свободное действие: 1/сцену свободным действием выберите одно из следующего: восстановить половину вашего максимального HP или починить уничтоженное оружие или систему.',
      tx_en:'Free Action: 1/scene, as a free action, choose one of the following: regain 1/2 of your total HP, or repair a destroyed weapon or system.'},
-    {key:'everestboost', name:'Everest Power Up Boost', ru:'Рывок «Усиление»', grant:{frame:'Everest'}, per:'1/turn',
-     tx_ru:'Свободное действие: Пока активно «Усиление», вы можете сделать Рывок как свободное действие, 1/ход.',
+    {key:'everestboost', name:'Everest Power Up Boost', ru:'Свободный Рывок', grant:{frame:'Everest'}, per:'1/turn',
+     tx_ru:'Свободное действие: Пока активен «Разгон Реактора», вы можете сделать Рывок как свободное действие, 1/ход.',
      tx_en:'Free Action: While Power Up is active, you may Boost as a free action, 1/turn.'},
+    {key:'everestinitiative', name:'Everest Initiative', ru:'Инициатива', grant:{frame:'Everest'}, per:'1/scene',
+     tx_ru:'Свободное действие: 1/сцену выполните любое быстрое действие как свободное действие.',
+     tx_en:'Free Action: 1/scene, take any quick action as a free action.'},
     {key:'enkiduboost', name:'Enkidu Crush Boost', ru:'Рывок «Энкиду»', grant:{frame:'Enkidu'},
      tx_ru:'Свободное действие: После того как «Разорвать» уничтожает персонажа, «Энкиду» может сделать Рывок как свободное действие.',
      tx_en:'Free Action: After Bifurcate destroys a character, the Enkidu can BOOST as a free action.'},
