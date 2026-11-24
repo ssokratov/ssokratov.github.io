@@ -1158,7 +1158,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v364</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v365</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
@@ -3752,7 +3752,8 @@ function renderMyActions(){
     box.innerHTML = '<p class="hint">' + esc(L('u232')) + '</p>';
     return;
   }
-  const chip = a => '<div class="myact-chip">' + refChip('action', a.key, actionLabel(a.key), false, 'grant') + '</div>';
+  // v365: опции Вторжения в «Твоих действиях» — жёлтые чипы .tag.tech, как тех-действия в стандартных
+  const chip = a => '<div class="myact-chip">' + refChip('action', a.key, actionLabel(a.key), false, isInvadeOption(a) ? 'tech' : 'grant') + '</div>';
   let h = '';
   if(myQk.length){
     h += '<h3>' + esc(L('u235')) + '</h3>';
@@ -5152,6 +5153,11 @@ function isFullTech(a){
 function isQuickTech(a){
   return /^quick tech/i.test(a.tx_en||'') || /^быстрая техника/i.test(a.tx_ru||'') ||
          /^invade option/i.test(a.tx_en||'') || /^опция вторжения/i.test(a.tx_ru||'');
+}
+// v365: опция Вторжения — та же проверка начала tx, что и в isQuickTech;
+// такие чипы в «Твоих действиях» — жёлтые (.tag.tech), а не синие.
+function isInvadeOption(a){
+  return /^invade option/i.test(a.tx_en||'') || /^опция вторжения/i.test(a.tx_ru||'');
 }
 // v319: иконка типа действия для синих чипов. Текстовая, как ✓/✕ в чипе
 // перезарядки, высота чипа не ломается. Форма = техника или нет,
