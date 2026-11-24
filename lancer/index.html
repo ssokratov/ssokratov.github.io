@@ -188,8 +188,9 @@
   .tag.load-on, .tag.load-off { display:inline-flex; align-items:center; gap:4px; }
   .tag .load-ico { line-height:1; font-size:11px; }
   .tag .act-ico { line-height:1; font-size:18px; margin-right:4px; font-family:'Noto Sans Math',sans-serif; }
-  .tag .act-ico.shift1 { transform:translateY(-1px); }
-  .tag .act-ico.shift2 { transform:translateY(-2px); }
+  /* v371: кастомные сдвиги иконок (shift1 -1px, shift2 -2px) убраны: они
+     настраивались под старые глифы, а символы Noto Sans Math и так стоят
+     по центру строки. Размер 18px (протокол 16px) не менялся. */
   .tag .act-ico.proto { font-size:16px; }
   dialog { background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:12px; padding:16px 18px; max-width:450px; width:calc(100% - 40px); }
   dialog::backdrop { background:rgba(0,0,0,.6); }
@@ -1167,7 +1168,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v370</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v371</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
@@ -3822,7 +3823,7 @@ const STANDARD_ACTIONS = [
 ];
 function stdActionIcon(a){
   const ic = {quick:'◐', qtech:'◈', full:'●', ftech:'◆', reaction:'↪'}[a.t] || '◐';
-  const cls = ic === '↪' ? 'act-ico shift2' : 'act-ico shift1';
+  const cls = 'act-ico';
   return '<span class="' + cls + '">' + ic + '</span> ';
 }
 function renderStdActions(){
@@ -5059,11 +5060,9 @@ function refChip(kind, key, label, stop, extraCls){
   // сворачивать/разворачивать карточку (toggleSysCard).
   const pre = stop ? 'event.stopPropagation();' : '';
   // v319: у чипов действий — иконка типа (○ ◐ ● ◈ ◆ ↪ ≡) перед названием
-  // v323: глифы кругов/ромбов/стрелок сидят низко в строке шрифта, поэтому
-  // честное центрирование их не центрирует — иконки сдвигаются вверх.
-  // v324: сдвиг по глифам — круги/ромбы -1px (при -2px они высоковато),
-  // стрелка реакции -2px (так отлично), протокол ≡ без сдвига и 16px
-  // (при 18px он хуже, чем был).
+  // v323/v324: раньше глифы сидели низко и сдвигались вверх (shift1 -1px,
+  // shift2 -2px); v371: сдвиги убраны — символы Noto Sans Math и так
+  // стоят по центру строки. Протокол ≡ — 16px (при 18px он хуже, чем был).
   // v366: опция Вторжения — жёлтый чип .tag.tech везде, где бы она ни показывалась
   // (в «Твоих действиях», на карточках систем/талантов, в деталях лицензий);
   // поэтому проверка — здесь, в refChip, а не у каждого вызова.
@@ -5078,8 +5077,6 @@ function refChip(kind, key, label, stop, extraCls){
     const ic = actionTypeIcon(act);
     let cls = 'act-ico';
     if (ic === '≡') cls += ' proto';
-    else if (ic === '↪') cls += ' shift2';
-    else cls += ' shift1';
     ico = '<span class="' + cls + '">' + ic + '</span> ';
   }
   // v325: чип оружия — стального цвета, не синий; иконки у него нет и не надо
