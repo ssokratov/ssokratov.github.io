@@ -83,7 +83,10 @@
   /* v401: жёлтая рамка после панели убрана — у карточки трекеров больше
      нет жёлтого верха (переопределяет border-top:2px solid var(--hud-amber)
      из .card); теперь все стороны — тонкая обычная рамка 1px var(--line). */
-  .res-card { padding-top:6px; border-top:1px solid var(--line); }
+  /* v403: двойная рамка под панелью убрана — у карточки трекеров верха нет
+     вовсе (border-top:none); разделителем служит нижняя рамка кнопок панели.
+     (v401 дала ей тонкий верх 1px — вместе с низом кнопок это давало две линии.) */
+  .res-card { padding-top:6px; border-top:none; }
   .card h2 { margin:0 0 10px; font-size:15px; letter-spacing:.08em; text-transform:uppercase; color:var(--hud-amber); }
   .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
   .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
@@ -559,8 +562,12 @@
   .sys-charges { display:inline-flex; align-items:center; gap:6px; }
   .sys-head .wmeta { padding-left:20px; margin-top:4px; }
   .sec.sys { margin-bottom:10px; }
-  .sys-body { display:none; margin-top:10px; margin-left: 18px; }
-  .sys.open .sys-body { display:block; }
+  /* v403: плавное разворачивание/сворачивание (grid minmax(0,0fr) ->
+     minmax(0,1fr), как у панели справок); margin-top тоже анимируется,
+     чтобы в закрытом виде не оставалось зазора. */
+  .sys-body { display:grid; grid-template-rows:minmax(0, 0fr); margin-top:0; margin-left:18px; overflow:hidden; transition:grid-template-rows .35s ease, margin-top .35s ease; }
+  .sys.open .sys-body { grid-template-rows:minmax(0, 1fr); margin-top:10px; }
+  .sys-body > * { min-height:0; overflow:hidden; }
   /* v264: уничтоженное оружие/система — название перечёркнуто. */
   .wcard.destroyed .weap-name, .sec.sys.destroyed .sys-name { text-decoration: line-through; }
   /* v265 (доп., уточнение пользователя — отмена правки про .tags):
@@ -579,8 +586,9 @@
   .dmg-row-head { cursor:pointer; }
   .dmg-row-arrow { color:var(--text); font-size:11px; line-height:1; transition:transform .15s; flex:0 0 auto; margin-right:6px; }
   .dmg-row.open .dmg-row-arrow { transform:rotate(90deg); }
-  .dmg-row .dmg-row-desc { display:none; }
-  .dmg-row.open .dmg-row-desc { display:block; }
+  .dmg-row .dmg-row-desc { display:grid; grid-template-rows:minmax(0, 0fr); overflow:hidden; transition:grid-template-rows .35s ease; }
+  .dmg-row.open .dmg-row-desc { grid-template-rows:minmax(0, 1fr); }
+  .dmg-row-desc > * { min-height:0; overflow:hidden; }
   /* v280: уничтожение — отдельный диалог со скроллом (было выпадающее меню
      в диалоге броска, v267: длинный список не влезал и не скроллился).
      Разделители между строками — оранжевые (var(--accent)), как в макете. */
@@ -608,8 +616,9 @@
   .prof-stop { color:var(--dim); font-size:12px; flex:0 0 auto; }
   .prof-stop.on { color:var(--accent); font-weight:700; }
   .weap-head .wmeta { padding-left:20px; margin-top:4px; }
-  .weap-body { display:none; margin-top:10px; margin-left: 18px; }
-  .wcard.open .weap-body { display:block; }
+  .weap-body { display:grid; grid-template-rows:minmax(0, 0fr); margin-top:0; margin-left:18px; overflow:hidden; transition:grid-template-rows .35s ease, margin-top .35s ease; }
+  .wcard.open .weap-body { grid-template-rows:minmax(0, 1fr); margin-top:10px; }
+  .weap-body > * { min-height:0; overflow:hidden; }
   /* Снаряжение пилота — сворачиваемые карточки (v263), как системы/оружие:
      статы, теги и заряды — в шапке, описание — только в развёрнутом теле. */
   .pilot-equip-head { cursor:pointer; }
@@ -618,8 +627,9 @@
   .pilot-equip-item.open .pilot-equip-arrow { transform:rotate(90deg); }
   .pilot-equip-name { flex:1 1 auto; font-weight:700; font-size:15px; color:var(--text); }
   .pilot-equip-head .pilot-equip-meta, .pilot-equip-head .pilot-equip-tags, .pilot-equip-head .pilot-equip-charges { padding-left:20px; }
-  .pilot-equip-body { display:none; margin-top:10px; margin-left:18px; }
-  .pilot-equip-item.open .pilot-equip-body { display:block; }
+  .pilot-equip-body { display:grid; grid-template-rows:minmax(0, 0fr); margin-top:0; margin-left:18px; overflow:hidden; transition:grid-template-rows .35s ease, margin-top .35s ease; }
+  .pilot-equip-item.open .pilot-equip-body { grid-template-rows:minmax(0, 1fr); margin-top:10px; }
+  .pilot-equip-body > * { min-height:0; overflow:hidden; }
   .tbl-row { border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin:6px 0 8px; background:var(--panel2); font-size:14px; line-height:1.5; }
   .tbl-row > div:first-child { margin-bottom:4px; }
   .tbl-row ul, #haseHint ul { margin:6px 0; padding-left:20px; }
@@ -1222,7 +1232,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v402</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v403</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
