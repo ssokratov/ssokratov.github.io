@@ -8,12 +8,18 @@
 <title>Lancer — Трекер персонажа</title>
 <link rel="icon" type="image/svg+xml" href="./icon.svg">
 <link rel="apple-touch-icon" href="./app-icon.png">
+<!-- v369: единый шрифт Roboto на всех платформах (Google Fonts); раньше был
+     системный набор (system-ui...), поэтому на Андроиде был Roboto, а на
+     Винде — Segoe UI. display=swap — пока шрифт грузится, виден системный. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   :root { --bg:#0e1116; --panel:#171c24; --panel2:#1e2530; --line:#2c3542; --text:#e8ecf1; --dim:#9aa7b5; --accent:#e8590c; --accent2:#4dabf7; --good:#51cf66; --bad:#ff6b6b; --hud-amber:#ffb000; --hud-amber-dim:rgba(255,176,0,.45); --hud-grid:rgba(255,255,255,.028); }
   * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html { overflow-x:clip; }
-  body { margin:0; background-color:var(--bg); background-image:linear-gradient(var(--hud-grid) 1px, transparent 1px), linear-gradient(90deg, var(--hud-grid) 1px, transparent 1px); background-size:28px 28px; color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; overflow-x:hidden; }
+  body { margin:0; background-color:var(--bg); background-image:linear-gradient(var(--hud-grid) 1px, transparent 1px), linear-gradient(90deg, var(--hud-grid) 1px, transparent 1px); background-size:28px 28px; color:var(--text); font-family:Roboto,system-ui,-apple-system,"Segoe UI",sans-serif; overflow-x:hidden; }
   /* v258: нижняя панель «Закрыть» полноэкранных видов — тот же навбар
      (фон, высота, оформление), только вместо вкладок одна кнопка закрытия,
      чтобы казалось, что навбар на месте. */
@@ -1158,7 +1164,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v368</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v369</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
