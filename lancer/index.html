@@ -597,6 +597,11 @@
   .dmg-row.open .dmg-row-arrow { transform:rotate(90deg); }
   .dmg-row .dmg-row-desc { display:grid; grid-template-rows:minmax(0, 0fr); overflow:hidden; transition:grid-template-rows .35s ease; }
   .dmg-row.open .dmg-row-desc { grid-template-rows:minmax(0, 1fr); }
+  /* v406: у grid-коллапса должен быть ОДИН ребёнок — иначе лишние дети
+     попадают в implicit auto-строки и не сворачиваются (баг: в Левел апе
+     при сворачивании исчезал только первый параграф, списки оставались).
+     Поэтому содержимое — в одном inner-диве; то же для dmg-row-desc
+     (там текст + кнопка — два элемента в сетке). */
   .dmg-row-desc > * { min-height:0; overflow:hidden; }
   /* v280: уничтожение — отдельный диалог со скроллом (было выпадающее меню
      в диалоге броска, v267: длинный список не влезал и не скроллился).
@@ -1034,6 +1039,7 @@
     <div class="sec rules-sec">
       <div class="rules-sec-head" onclick="toggleRulesSec(this)" role="button"><span class="rules-sec-arrow">▶</span><span data-i18n="u097">Ход и структура боя</span></div>
       <div class="rules-sec-body">
+      <div class="rules-sec-inner">
       <ul>
         <li data-i18n="u098">На своём ходу: <b>1 стандартное движение</b> (до значения Speed) и либо <b>2 быстрых действия</b>, либо <b>1 полное действие</b>.</li>
         <li data-i18n="u099">Одно и то же действие нельзя повторять за ход — кроме Quick Tech (каждый раз другая опция) и свободных действий.</li>
@@ -1042,10 +1048,12 @@
         <li data-i18n="u102">Действие можно выполнить в середине движения, но нужно полностью разрешить его до окончания движения.</li>
       </ul>
       </div>
+      </div>
     </div>
     <div class="sec rules-sec">
       <div class="rules-sec-head" onclick="toggleRulesSec(this)" role="button"><span class="rules-sec-arrow">▶</span><span data-i18n="u166">Левел ап (повышение LL)</span></div>
       <div class="rules-sec-body">
+      <div class="rules-sec-inner">
       <p data-i18n="u167">После каждой миссии — успех или провал, неважно — LL пилота растёт на 1 (максимум LL12). При каждом повышении получи:</p>
       <ul>
         <li data-i18n="u168"><b>+2 к триггеру:</b> +2 к существующему триггеру или новый триггер на +2.</li>
@@ -1071,6 +1079,7 @@
         <li data-i18n="u184"><b>LL9:</b> GRIT 5 · Навыки 11 · Лицензии 9 · Таланты 12 · Core 3 · Триггеры 26</li>
         <li data-i18n="u185"><b>LL12:</b> GRIT 6 · Навыки 14 · Лицензии 12 · Таланты 15 · Core 4 · Триггеры 32</li>
       </ul>
+      </div>
       </div>
     </div>
     <div class="sec sec-link" role="button" onclick="openSearch('license')">
@@ -1245,7 +1254,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v405</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v406</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
@@ -6235,12 +6244,12 @@ function dmgRollRows(kind){
     const st = DMG_ROW_STATUS[descKey];
     const on = st && (S.statuses || []).includes(st);
     const btn = st ? `<div style="margin-top:8px"><button class="btn${on ? ' primary' : ''}" type="button" onclick="toggleDmgStatus('${st}', this)">${esc((on ? L('dmg_remove_status') : L('dmg_apply_status')).replace('{S}', st))}</button></div>` : '';
-    return `<div class="tbl-row dmg-row"><div class="dmg-row-head" onclick="toggleDmgRow(this.parentNode)"><span class="dmg-row-arrow">▶</span><span class="tbl-roll">${esc(roll)}</span><span>${L(titleKey)}</span></div><div class="dmg-row-desc">${L(descKey)}${btn}</div></div>`;
+    return `<div class="tbl-row dmg-row"><div class="dmg-row-head" onclick="toggleDmgRow(this.parentNode)"><span class="dmg-row-arrow">▶</span><span class="tbl-roll">${esc(roll)}</span><span>${L(titleKey)}</span></div><div class="dmg-row-desc"><div class="dmg-row-desc-inner">${L(descKey)}${btn}</div></div></div>`;
   }).join('');
   if (kind !== 'structure'){
     const m = L('u049').match(/^<b>(.*?)<\/b>\s*/);
     html += m
-      ? `<div class="tbl-row dmg-row"><div class="dmg-row-head" onclick="toggleDmgRow(this.parentNode)"><span class="dmg-row-arrow">▶</span><span>${m[1]}</span></div><div class="dmg-row-desc">${L('u049').slice(m[0].length)}</div></div>`
+      ? `<div class="tbl-row dmg-row"><div class="dmg-row-head" onclick="toggleDmgRow(this.parentNode)"><span class="dmg-row-arrow">▶</span><span>${m[1]}</span></div><div class="dmg-row-desc"><div class="dmg-row-desc-inner">${L('u049').slice(m[0].length)}</div></div></div>`
       : `<p>${L('u049')}</p>`;
   }
   return html;
