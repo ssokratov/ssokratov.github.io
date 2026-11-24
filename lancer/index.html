@@ -106,7 +106,10 @@
      heat thermometer — like the hp-tracker demo: each +/- click adds to the
      cumulative delta, slam on every update, pop on structure/stress loss,
      hides 2 s after the last click and resets. */
-  .delta-container { position:absolute; bottom:calc(100% + 4px); left:50%; display:flex; flex-direction:row; align-items:baseline; white-space:nowrap; pointer-events:none; opacity:0; transform:translateX(-50%) translateY(8px) scale(.85); transition:opacity .25s ease, transform .25s cubic-bezier(.22,1,.36,1); z-index:5; }
+  /* v400: цифры анимации рисуются ниже примерно на половину своей высоты
+     (было bottom:calc(100% + 4px) — нижний край на 4px выше кольца;
+     стало calc(100% - 8px) — сдвиг вниз на 12px, ~половина высоты цифры). */
+  .delta-container { position:absolute; bottom:calc(100% - 8px); left:50%; display:flex; flex-direction:row; align-items:baseline; white-space:nowrap; pointer-events:none; opacity:0; transform:translateX(-50%) translateY(8px) scale(.85); transition:opacity .25s ease, transform .25s cubic-bezier(.22,1,.36,1); z-index:5; }
   .delta-container.visible { opacity:1; transform:translateX(-50%) translateY(0) scale(1); }
   .delta-val { font-size:24px; font-weight:800; letter-spacing:-.5px; line-height:1.05; flex-shrink:0; text-shadow:0 2px 10px rgba(0,0,0,.75); transition:color .15s ease; }
   .delta-val.damage { color:var(--bad); }
@@ -251,9 +254,11 @@
      v387: круги ещё меньше — 18px. */
   .ref-panel { margin:0; }
   .ref-btns { display:flex; gap:0; }
-  .ref-btn { flex:1 1 0; min-width:0; height:36px; padding:0; font-size:18px; line-height:1; text-align:center; white-space:nowrap; border:1px solid var(--line); border-top:2px solid var(--hud-amber); border-right:none; border-radius:0; background:var(--panel2); color:var(--dim); cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  /* v400: кнопкам сверху добавлен объём — вертикальный градиент и
+     внутренние тени (блик сверху, тень снизу), чтобы не выглядели плоскими. */
+  .ref-btn { flex:1 1 0; min-width:0; height:36px; padding:0; font-size:18px; line-height:1; text-align:center; white-space:nowrap; border:1px solid var(--line); border-top:2px solid var(--hud-amber); border-right:none; border-radius:0; background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.02) 45%, rgba(0,0,0,.22)), var(--panel2); box-shadow:inset 0 1px 0 rgba(255,255,255,.14), inset 0 -3px 4px rgba(0,0,0,.28); color:var(--dim); cursor:pointer; display:flex; align-items:center; justify-content:center; }
   .ref-btn:last-child { border-right:1px solid var(--line); }
-  .ref-btn.on { background:var(--hud-amber); border-color:var(--hud-amber); color:#1a1a1a; font-weight:700; border-bottom-color:var(--panel); }
+  .ref-btn.on { background:linear-gradient(180deg, #ffd34d, var(--hud-amber) 55%, #e09600); border-color:var(--hud-amber); color:#1a1a1a; font-weight:700; border-bottom-color:var(--panel); box-shadow:inset 0 1px 0 rgba(255,255,255,.45), inset 0 -3px 5px rgba(0,0,0,.28); }
   .ref-btn.on + .ref-btn { border-left-color:var(--hud-amber); }
   .ref-btn svg { width:18px; height:18px; vertical-align:middle; }
   /* v389: звезда (Твои действия) и кровать (Отдых) — чуть больше, 20px;
@@ -262,9 +267,9 @@
   #refBtn-my svg, #refBtn-rest svg { width:20px; height:20px; }
   .ref-btn .act-ico { font-size:18px; margin-right:0; font-family:'Noto Sans Math',sans-serif; }
   /* v399: секции панели плавно выдвигаются вниз — .ref-body это grid с
-     grid-template-rows 0fr -> 1fr (transition .28s); padding и цвет рамки
+     grid-template-rows 0fr -> 1fr (transition .45s, v400); padding и цвет рамки
      тоже анимируются, чтобы в закрытом виде от тела не оставалось полосы. */
-  .ref-body { display:grid; grid-template-rows:0fr; margin-top:0; padding:0 10px; border:1px solid transparent; border-top:none; border-radius:0; background:var(--panel); overflow:hidden; transition:grid-template-rows .28s ease, padding .28s ease, border-color .28s ease; }
+  .ref-body { display:grid; grid-template-rows:0fr; margin-top:0; padding:0 10px; border:1px solid transparent; border-top:none; border-radius:0; background:var(--panel); overflow:hidden; transition:grid-template-rows .45s ease, padding .45s ease, border-color .45s ease; }
   .ref-body.open { grid-template-rows:1fr; padding:10px; border-color:var(--line); }
   .ref-body > * { min-height:0; overflow:hidden; }
   /* v377: заголовки внутри панели — поменьше и тусклее (были дефолтные ~18px);
@@ -767,10 +772,10 @@
          карточки ресурсов сжат, чтобы кольцо HP сидело ближе к панели. -->
     <div class="ref-panel" id="refPanel">
       <div class="ref-btns" role="tablist">
-        <button type="button" class="ref-btn" id="refBtn-my" data-ref="my" aria-pressed="false" aria-label="Твои действия" title="Твои действия" onclick="toggleRef('my')"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></button>
-        <button type="button" class="ref-btn" id="refBtn-std" data-ref="std" aria-pressed="false" aria-label="Стандартные действия" title="Стандартные действия" onclick="toggleRef('std')"><span class="act-ico">●</span><span class="act-ico">/</span><span class="act-ico">◐</span><span class="act-ico">◐</span></button>
-        <button type="button" class="ref-btn" id="refBtn-status" data-ref="status" aria-pressed="false" aria-label="Статусы" title="Статусы" onclick="toggleRef('status')"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg></button>
         <button type="button" class="ref-btn" id="refBtn-rest" data-ref="rest" aria-pressed="false" aria-label="Отдых и ремонт" title="Отдых и ремонт" onclick="toggleRef('rest')"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/></svg></button>
+        <button type="button" class="ref-btn" id="refBtn-status" data-ref="status" aria-pressed="false" aria-label="Статусы" title="Статусы" onclick="toggleRef('status')"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg></button>
+        <button type="button" class="ref-btn" id="refBtn-std" data-ref="std" aria-pressed="false" aria-label="Стандартные действия" title="Стандартные действия" onclick="toggleRef('std')"><span class="act-ico">●</span><span class="act-ico">/</span><span class="act-ico">◐</span><span class="act-ico">◐</span></button>
+        <button type="button" class="ref-btn" id="refBtn-my" data-ref="my" aria-pressed="false" aria-label="Твои действия" title="Твои действия" onclick="toggleRef('my')"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></button>
       </div>
       <div class="ref-body" id="refBody">
         <div class="ref-pane" id="refPane-my" hidden><div id="myActions"></div></div>
@@ -1207,7 +1212,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v399</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v400</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
@@ -3924,10 +3929,28 @@ function toggleRef(key){
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
     }
     const p = document.getElementById('refPane-' + k);
-    if (p) p.hidden = k !== refSel;
+    if (p){
+      if (k === refSel) p.hidden = false;
+      else if (refSel) p.hidden = true;
+      // v400: при закрытии панели не прячем сразу — иначе grid нечего
+      // анимировать и тело исчезает моментально; прячем после съезжания
+    }
   }
   const body = document.getElementById('refBody');
-  if (body) body.classList.toggle('open', !!refSel);
+  if (body){
+    if (refSel) body.classList.add('open');
+    else {
+      body.classList.remove('open');
+      setTimeout(function(){
+        if (!refSel){
+          for (const k of REF_KEYS){
+            const p = document.getElementById('refPane-' + k);
+            if (p) p.hidden = true;
+          }
+        }
+      }, 450);
+    }
+  }
 }
 function showStdAction(key){
   const a = STANDARD_ACTIONS.find(x=>x.k===key);
