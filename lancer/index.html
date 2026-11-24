@@ -185,11 +185,12 @@
   /* v290: «Твои действия» — чип с новой строки */
   .myact-chip { margin:5px 0; }
   /* v384: короткие стандартные действия — по 2 в строке (первые 6 быстрых,
-     первые 2 полных/реакций/пилота): пара — flex-строка, чипы делят её
-     пополам, тег тянется на всю свою половину. */
+     первые 2 полных/реакций/пилота): пара — flex-строка.
+     v386: чипы НЕ делят строку 50/50 — каждый берёт столько, сколько ему
+     надо (короткий не отбирает место у длинного); тег — своей естественной
+     ширины. */
   .myact-pair { display:flex; gap:8px; }
-  .myact-pair .myact-chip { flex:1 1 0; min-width:0; display:flex; }
-  .myact-pair .myact-chip .tag { flex:1; min-width:0; }
+  .myact-pair .myact-chip { flex:0 0 auto; }
   /* v293: сообщение готовности блока — отдельная строка под заголовком; зелёное = готово, янтарное = не хватает */
   .ready-msg { font-size:13px; font-weight:600; margin:2px 0 6px; }
   .ready-msg.ok { color:#51cf66; }
@@ -1183,7 +1184,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v385</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v386</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
