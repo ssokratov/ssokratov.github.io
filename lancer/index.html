@@ -679,8 +679,8 @@
   /* v382: нижний отступ вьюх — 10px, а не 72px: фиксированную навигацию
      прикрывает футер (padding-bottom:72px), а 72px у вьюхи давали огромный
      зазор перед футером. */
-  #searchView, #cbView, #pilotGearView, #startView, #luView { display:none; flex:1; max-width:600px; margin:0 auto; padding:16px 16px 10px; }
-  .search-dlg { max-width:600px; margin:0 auto; }
+  #searchView, #cbView, #pilotGearView, #startView, #luView { display:none; flex:1; width:100%; max-width:600px; margin:0 auto; padding:16px 16px 10px; }
+  .search-dlg { width:100%; max-width:600px; margin:0 auto; }
   .btn.icon { padding:8px 12px; font-size:18px; line-height:1; }
   /* Плюс в кнопках добавления внутри поисков (v172): жёлтый, шрифт крупнее, а размер кнопки тот же,
      что у обычной .btn (40px) — за счёт меньшего паддинга и line-height:1 */
@@ -1190,7 +1190,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v393</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v394</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
