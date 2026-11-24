@@ -280,10 +280,11 @@
      тонкая линия между кнопками (.ref-btn + .ref-btn border-left).
      v410: градиент — светлый и сверху, и снизу, середина чуть темнее:
      сталь #454e5e по краям, #2b323e в середине (янтарная активная — #ffd34d
-     по краям, #ffb000 в середине); свет теперь с обеих сторон. */
-  .ref-btn { flex:1 1 0; min-width:0; height:36px; padding:0; font-size:18px; line-height:1; text-align:center; white-space:nowrap; border:none; border-radius:0; background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,0) 50%, rgba(255,255,255,.12)), linear-gradient(180deg, #454e5e 0%, #2b323e 50%, #454e5e 100%); color:var(--dim); cursor:pointer; display:flex; align-items:center; justify-content:center; }
+     по краям, #ffb000 в середине); свет теперь с обеих сторон.
+     v411: тёмная середина — сильно шире: плато 30%–70% вместо точки на 50%. */
+  .ref-btn { flex:1 1 0; min-width:0; height:36px; padding:0; font-size:18px; line-height:1; text-align:center; white-space:nowrap; border:none; border-radius:0; background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,0) 30%, rgba(255,255,255,0) 70%, rgba(255,255,255,.12)), linear-gradient(180deg, #454e5e 0%, #2b323e 30%, #2b323e 70%, #454e5e 100%); color:var(--dim); cursor:pointer; display:flex; align-items:center; justify-content:center; }
   .ref-btn + .ref-btn { border-left:1px solid var(--line); }
-  .ref-btn.on { background:linear-gradient(180deg, #ffd34d 0%, var(--hud-amber) 50%, #ffd34d 100%); color:#1a1a1a; font-weight:700; }
+  .ref-btn.on { background:linear-gradient(180deg, #ffd34d 0%, var(--hud-amber) 30%, var(--hud-amber) 70%, #ffd34d 100%); color:#1a1a1a; font-weight:700; }
   .ref-btn svg { width:18px; height:18px; vertical-align:middle; }
   /* v389: звезда (Твои действия) и кровать (Отдых) — чуть больше, 20px;
      тег (Статусы) и глифы Стандартных остаются 18px.
@@ -1269,7 +1270,7 @@
 <div class="footer-links">
   <a href="https://ssokratov.github.io/lancer/privacy.html">Privacy Policy</a><span class="sep" aria-hidden="true">·</span>
   <a href="https://ssokratov.github.io/lancer/terms.html">Terms of Service</a>
-  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v410</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
+  <span class="sep" aria-hidden="true">·</span><span class="dim global-version" style="color: var(--dim);">v411</span><span class="sep" aria-hidden="true">·</span><button type="button" class="toggle" id="langToggle" onclick="toggleLang()" aria-label="Language / Язык"><span class="lang-opt" data-lang="ru">RUS</span><span class="lang-opt" data-lang="en">ENG</span><span class="knob"></span></button>
 </div>
 <script src="./db.js"></script>
 <script src="./pilot_gear_db.js"></script>
